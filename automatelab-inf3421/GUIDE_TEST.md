@@ -170,11 +170,11 @@ opérations en reliant des nœuds.
    nœud) vers le point d'entrée (à gauche du suivant), dans l'ordre :
    `Importer automate → AFN → AFD → Minimiser → Exporter`.
 
-> **L'effet sur les liens** : chaque lien est une courbe avec un **point
-> lumineux qui circule** le long du fil (sens de propagation des données).
-> Au survol, le lien s'illumine ; le lien sélectionné devient plus épais avec
-> un halo. Les couleurs changent selon l'état du nœud cible : gris (inactif),
-> corail (en cours), vert (succès), rouge (erreur).
+> **L'effet sur les liens** : chaque lien est une courbe en **tirets animés
+> corail** (couleur du thème) qui défilent dans le sens de propagation des
+> données. Au survol, le lien s'illumine ; le lien sélectionné devient plus
+> épais avec un léger halo. Le tracé d'une nouvelle connexion est lui aussi
+> animé.
 
 ### 6.2 Exécuter
 
@@ -295,7 +295,8 @@ Les tests couvrent : validation, accessibilité/émondage, complétion,
 déterminisation, ε-fermeture, **ε-AFN → AFN**, minimisation, regex (parser,
 Thompson, Glushkov), automate → regex, Arden et clôtures.
 
-Résultat attendu : **tous les tests au vert** et un **build sans erreur**.
+Résultat attendu : **22 tests au vert** (`Tests 22 passed (22)`) et un **build
+sans erreur** (8 routes générées).
 
 ---
 

@@ -15,7 +15,7 @@ Visualiser · Convertir · Analyser — dans une interface claire inspirée des 
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-v4-38BDF8?logo=tailwindcss&logoColor=white)
 ![React Flow](https://img.shields.io/badge/React%20Flow-12-FF4F81)
 ![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E?logo=supabase&logoColor=white)
-![Vitest](https://img.shields.io/badge/Vitest-19%20tests-6E9F18?logo=vitest&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-22%20tests-6E9F18?logo=vitest&logoColor=white)
 ![Bun](https://img.shields.io/badge/Bun-1.3-000000?logo=bun&logoColor=white)
 
 </div>
@@ -52,19 +52,24 @@ opérations comme des **nœuds de workflow**, observe les **graphes résultats**
 des **traces pédagogiques** détaillées et **exporte** le tout pour son rapport.
 
 > Le moteur algorithmique (`src/core`) est **du TypeScript pur, sans React**, ce
-> qui le rend entièrement **testable** (19 tests Vitest) et réutilisable.
+> qui le rend entièrement **testable** (22 tests Vitest) et réutilisable.
 
 ### Objectifs couverts par le TP
 
-- Résolution de systèmes d'équations (lemme d'Arden) ;
-- conversion AFN → AFD et ε-AFN → AFD ;
-- extraction d'expression régulière depuis un automate ;
-- complétion AFD → AFDC (état puits) ;
-- états accessibles / co-accessibles / utiles et émondage ;
-- ε-fermeture ;
-- minimisation et canonisation ;
-- constructions de Thompson et de Glushkov ;
-- opérations de clôture (union, intersection, complément, concaténation, étoile, différence).
+- Résolution de systèmes d'équations (lemme d'Arden) → expression régulière ;
+- conversion **AFN → AFD** et **ε-AFN → AFD** ;
+- extraction d'expression régulière depuis un automate (AFN ou AFD) ;
+- complétion **AFD → AFDC** (état puits) ;
+- identification des états **accessibles / co-accessibles / utiles** (boutons distincts) ;
+- **émondage** (automate réduit à ses états utiles) ;
+- conversion **AFD → AFN** (triviale, pour la modularité) ;
+- conversions **AFN ↔ ε-AFN** (dont l'élimination des ε-transitions ε-AFN → AFN) ;
+- **ε-fermeture** d'un état donné (sélectionné) ou de tous les états ;
+- conversion **AFD → ε-AFN** ;
+- **construction de Thompson** (regex → ε-AFN) ;
+- **minimisation** (AFD minimal) et **canonisation** ;
+- **algorithme de Glushkov** (regex → automate de positions) ;
+- **opérations de clôture** (union, intersection, complément, concaténation, étoile, différence).
 
 ---
 
@@ -72,8 +77,8 @@ des **traces pédagogiques** détaillées et **exporte** le tout pour son rappor
 
 | Module | Rôle |
 | --- | --- |
-| **Automate Studio** (`/lab`) | Édition graphique d'états/transitions : initial, final, boucles, multi-transitions, import/export JSON, auto-layout, validation en direct, exécution d'algorithmes avec comparaison avant/après. |
-| **Workflow Studio** (`/workflow`) | Canvas type n8n : déposer des nœuds d'opérations, les connecter, lancer le pipeline et voir chaque nœud passer en succès/erreur, avec logs. |
+| **Automate Studio** (`/lab`) | Édition graphique d'états/transitions : initial, final, boucles, multi-transitions, **ajout de transition par formulaire** (sélecteurs De/Vers + symbole), import/export JSON, auto-layout, validation en direct, exécution d'algorithmes avec comparaison avant/après. |
+| **Workflow Studio** (`/workflow`) | Canvas type n8n : déposer des nœuds d'opérations, les connecter par des **liens animés (tirets corail)**, lancer le pipeline et voir chaque nœud passer en succès/erreur, avec logs. |
 | **Regex Studio** (`/regex`) | Thompson (ε-AFN) et Glushkov (automate de positions) depuis une expression régulière. |
 | **Equation Studio** (`/equations`) | Résolution de systèmes d'équations de langages par élimination de Gauss + lemme d'Arden. |
 | **Closure Studio** (`/closure`) | Opérations de clôture entre deux langages. |
@@ -87,8 +92,8 @@ des **traces pédagogiques** détaillées et **exporte** le tout pour son rappor
 | --- | --- | --- |
 | Framework | **Next.js 16** (App Router) | Routing, layouts, pages, build, déploiement |
 | Langage | **TypeScript strict** | Sûreté de types sur automates et résultats |
-| Style | **Tailwind CSS v4** | Design sombre neutre (thème type Supabase) |
-| Graphes / canvas | **@xyflow/react** (React Flow 12) | Nœuds, arcs, zoom, mini-map, drag and drop |
+| Style | **Tailwind CSS v4** | Design sombre neutre, accent corail, esprit n8n (cartes-nœuds, liens en tirets animés) |
+| Graphes / canvas | **@xyflow/react** (React Flow 12) | Nœuds, arcs courbes, connecteurs ronds, zoom, drag and drop |
 | Layout auto | **dagre** | Disposition automatique des automates |
 | État global | **Zustand** | Automate courant, workflow, historique |
 | Validation | **Zod** | Schémas JSON, import sécurisé |
@@ -127,8 +132,10 @@ automatelab-inf3421/
 │   │   ├── accessible.ts     # accessibles / co-accessibles / utiles
 │   │   ├── trim.ts           # émondage
 │   │   ├── complete-dfa.ts   # AFD → AFDC
-│   │   ├── nfa-to-dfa.ts     # déterminisation
-│   │   ├── epsilon-closure.ts# ε-fermeture
+│   │   ├── nfa-to-dfa.ts     # déterminisation (AFN → AFD)
+│   │   ├── dfa-to-nfa.ts     # AFD → AFN, AFN → ε-AFN, AFD → ε-AFN (triviales)
+│   │   ├── enfa-to-nfa.ts    # ε-AFN → AFN (élimination des ε-transitions)
+│   │   ├── epsilon-closure.ts# ε-fermeture (état donné ou tous)
 │   │   ├── enfa-to-dfa.ts    # ε-AFN → AFD
 │   │   ├── minimize.ts       # minimisation
 │   │   ├── canonize.ts       # canonisation
@@ -340,7 +347,9 @@ erDiagram
 | Émondage | `trim.ts` | Garder les états utiles et leurs transitions | supprime l'état mort |
 | Complétion AFDC | `complete-dfa.ts` | Ajout d'un état puits ⊥ | transition manquante → ⊥ |
 | AFN → AFD | `nfa-to-dfa.ts` | Construction par sous-ensembles | `{q0,q1}` devient un état |
-| ε-fermeture | `epsilon-closure.ts` | États atteignables par ε | `Eclose(q0)={q0,q1,q2}` |
+| AFD → AFN / AFN → ε-AFN / AFD → ε-AFN | `dfa-to-nfa.ts` | Conversions triviales (changement de type, structure conservée) | uniformisation des pipelines |
+| ε-AFN → AFN | `enfa-to-nfa.ts` | Élimination des ε : `δ_N(q,a)=Eclose(δ(Eclose(q),a))` | retire les ε en préservant le langage |
+| ε-fermeture | `epsilon-closure.ts` | États atteignables par ε (un état donné ou tous) | `Eclose(q0)={q0,q1,q2}` |
 | ε-AFN → AFD | `enfa-to-dfa.ts` | ε-fermeture + sous-ensembles | — |
 | Minimisation | `minimize.ts` | Raffinement de partitions | fusion d'états équivalents |
 | Canonisation | `canonize.ts` | Renommage stable `q0, q1, …` (BFS) | sortie déterministe |
@@ -413,9 +422,14 @@ Copiez `.env.local.example` en `.env.local` et renseignez :
 
 ```dotenv
 NEXT_PUBLIC_SUPABASE_URL=https://VOTRE_REF.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...          # Settings → API Keys → anon public
+# Clé « publishable » (nouveau format) ou clé « anon public » (format JWT historique).
+# Settings → API Keys. La clé publishable est sûre côté navigateur si la RLS est activée.
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 NEXT_PUBLIC_SUPABASE_SCHEMA=automatelab
 ```
+
+> ⚠️ Ne mettez **jamais** la clé `secret` (`sb_secret_...`) dans une variable
+> `NEXT_PUBLIC_*` : elle est réservée au back-end.
 
 ### Étape 5 — Relancer
 
@@ -425,6 +439,10 @@ bun run dev
 
 Le badge **« Supabase connecté »** apparaît dans la barre du haut. Sinon, le
 badge **« Stockage local »** indique le mode hors-ligne.
+
+> **Repli automatique** : si le schéma n'est pas encore appliqué ou si une
+> requête échoue, la couche de persistance bascule **silencieusement** sur le
+> `localStorage`. L'application ne plante jamais pour cette raison.
 
 > Pour appliquer le schéma en ligne de commande :
 > ```bash
@@ -443,23 +461,34 @@ badge **« Stockage local »** indique le mode hors-ligne.
 2. **Automate Studio** :
    - cliquez sur **AFN → AFD** : la déterminisation s'affiche avec la table de
      transition et le graphe résultat ;
-   - cliquez sur **Minimiser** : comparez l'AFD avant/après.
+   - cliquez sur **Minimiser** : comparez l'AFD avant/après ;
+   - testez **Accessibles**, **Co-accessibles**, **Utiles (analyse)** pour la
+     coloration et la liste des états.
 3. **Regex Studio** : saisissez `(a+b)*abb`, cliquez **Thompson** pour obtenir
    l'ε-AFN, puis **Charger dans le Studio**.
 4. **Workflow Studio** :
-   - le pipeline par défaut est `Importer → AFN→AFD → Minimiser → Exporter` ;
+   - construisez `Importer → AFN→AFD → Minimiser → Exporter` et reliez les
+     nœuds (liens en tirets corail animés) ;
    - cliquez **Lancer le workflow** : chaque nœud passe au vert, les logs
      s'affichent ;
-   - sélectionnez un nœud puis **Voir le détail** pour la trace complète.
+   - onglet **Inspecteur** → sélectionnez un nœud → **Voir le résultat** pour la
+     trace complète.
 5. **Report Center** : exportez l'automate en **JSON** / **PNG**, copiez la
    trace, et consultez le **plan du rapport** et le **tableau de participation**.
 
 ### Créer un automate à la main
 
-- **+ État** ajoute un état ; double-glissez d'un état vers un autre pour créer
-  une **transition** (saisie du symbole, `ε` pour spontanée) ;
-- l'**inspecteur** (à droite) permet de renommer, marquer initial/final,
+- **+ État** (barre d'outils) ou **Ajouter un état** (Inspecteur) crée un état.
+- **Transition** — deux méthodes :
+  - *glisser-déposer* : tirer du bord d'un état vers un autre, puis saisir le
+    symbole (`ε` pour spontanée) ;
+  - *formulaire* : dans l'**Inspecteur**, section **Transitions**, choisir
+    « De » / « Vers », taper le symbole et cliquer **Ajouter**. La liste permet
+    de sélectionner ou supprimer chaque transition.
+- l'**Inspecteur** permet de renommer, fixer l'alphabet, marquer initial/final,
   supprimer, et affiche la **validation en direct**.
+- **ε-fermeture d'un état donné** : sélectionnez un état puis cliquez
+  **ε-fermeture** — la fermeture de cet état est calculée et coloriée.
 
 ### Syntaxe des expressions régulières
 
@@ -484,14 +513,15 @@ bun run test           # exécution unique
 bun run test:watch     # mode watch
 ```
 
-### Couverture (19 tests)
+### Couverture (22 tests)
 
 | Catégorie | Cas testés |
 | --- | --- |
 | Validation | AFN détecté, transition vers état inconnu, ε interdit dans un AFD |
-| Accessibilité | état accessible mais non co-accessible, émondage, métriques |
+| Accessibilité | état accessible mais non co-accessible, émondage, métriques, rapports accessibles/co-accessibles |
 | Complétion | ajout d'un puits quand une transition manque |
 | Déterminisation | AFN → AFD reconnaît `abb`, ε-fermeture, ε-AFN → AFD |
+| Conversions ε | ε-AFN → AFN (élimination des ε), ε-fermeture d'un état donné |
 | Minimisation | réduction d'un AFD à états équivalents |
 | Regex | parsing, Thompson (initial/final uniques), Glushkov sans ε, automate → regex |
 | Arden | `X = aX + b` donne `a*b` |
@@ -502,7 +532,7 @@ bun run test:watch     # mode watch
 
 ```text
  Test Files  1 passed (1)
-      Tests  19 passed (19)
+      Tests  22 passed (22)
 ```
 
 ### Ajouter un test
