@@ -1,0 +1,181 @@
+@import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
+
+/* =====================================================================
+   AutoMateLab INF3421 — Design system
+   Éditeur de workflow sombre et pro, dans l'esprit n8n :
+   surfaces neutres, accent corail, nœuds en cartes, liens en courbes.
+   ===================================================================== */
+@theme {
+  --color-bg: #14151a;            /* canvas */
+  --color-surface: #1b1d23;       /* panneaux */
+  --color-surface-2: #21242c;
+  --color-elevated: #292c35;
+  --color-border: #34373f;
+  --color-border-soft: #282b32;
+
+  --color-text: #e9eaed;
+  --color-muted: #9aa0ad;
+  --color-faint: #6a7080;
+
+  --color-primary: #ff6d5a;       /* corail (accent principal) */
+  --color-primary-hover: #ff8273;
+  --color-primary-ink: #ffffff;
+  --color-accent: #c15bff;        /* violet doux (déclencheurs/regex) */
+
+  --color-success: #2bd4a4;
+  --color-warning: #f2b53c;
+  --color-danger: #f5635f;
+  --color-info: #5b9dff;
+
+  --color-edge: #707688;          /* liens du canvas */
+
+  --radius-card: 10px;
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utilitaires sobres ------------------------------------------------- */
+.brand-text {
+  color: var(--color-primary);
+}
+.card-surface {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.surface-hover:hover {
+  background: var(--color-surface-2);
+}
+.dotgrid {
+  background-image: radial-gradient(var(--color-border) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* Scrollbars --------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #3c3f49;
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4a4e5a;
+  background-clip: padding-box;
+}
+
+/* =====================================================================
+   React Flow — esprit n8n
+   ===================================================================== */
+.react-flow {
+  --xy-background-color: transparent;
+}
+.react-flow__attribution {
+  display: none;
+}
+.react-flow__controls {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 6px 20px -10px rgba(0, 0, 0, 0.7);
+}
+.react-flow__controls-button {
+  background: var(--color-surface-2);
+  border-color: var(--color-border) !important;
+  color: var(--color-text);
+}
+.react-flow__controls-button:hover {
+  background: var(--color-elevated);
+}
+.react-flow__controls-button svg {
+  fill: var(--color-text);
+}
+.react-flow__minimap {
+  background: var(--color-surface) !important;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+/* liens : courbes douces, gris neutre, qui s'illuminent au survol */
+.react-flow__edge-path {
+  stroke: var(--color-edge);
+  stroke-width: 2;
+  transition: stroke 0.15s ease, filter 0.15s ease;
+}
+.react-flow__edge:hover .react-flow__edge-path {
+  stroke: var(--color-primary);
+  filter: drop-shadow(0 0 5px rgba(255, 109, 90, 0.55));
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--color-primary);
+}
+/* tracé d'une nouvelle connexion */
+.react-flow__connection-path {
+  stroke: var(--color-primary);
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  animation: flow-dash 0.85s linear infinite;
+}
+
+/* connecteurs ronds façon n8n */
+.react-flow__handle {
+  width: 11px;
+  height: 11px;
+  border-radius: 9999px;
+  background: var(--color-surface);
+  border: 2px solid var(--color-edge);
+  transition: all 0.12s ease;
+}
+.react-flow__handle:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+.react-flow__handle-connecting {
+  border-color: var(--color-primary);
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgba(255, 109, 90, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(255, 109, 90, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 109, 90, 0); }
+}
+.running-pulse {
+  animation: pulse-ring 1.4s ease-out infinite;
+}
+
+@keyframes flow-dash {
+  from { stroke-dashoffset: 16; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fade-up 0.3s ease both;
+}
