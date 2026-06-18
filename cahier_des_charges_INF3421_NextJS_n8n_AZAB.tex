@@ -1,0 +1,1183 @@
+% !TeX program = xelatex
+\documentclass[11pt,a4paper]{report}
+
+% ------------------ Packages ------------------
+\usepackage{fontspec}
+\setmainfont{Noto Serif}
+\setsansfont{Noto Sans}
+\setmonofont{DejaVu Sans Mono}
+\usepackage[french]{babel}
+\usepackage[a4paper,margin=2.05cm,headheight=18pt]{geometry}
+\usepackage{graphicx}
+\usepackage{array,booktabs,longtable,tabularx,multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,shapes.multipart,fit,calc,decorations.pathreplacing,backgrounds,shadows.blur}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+\usepackage{pdflscape}
+\usepackage{caption}
+\usepackage{amsmath,amssymb}
+\usepackage{pifont}
+\usepackage{float}
+\usepackage{lastpage}
+\usepackage{microtype}
+\usepackage{fontawesome5}
+
+% ------------------ Couleurs ------------------
+\definecolor{uyblue}{HTML}{0B1F4D}
+\definecolor{uyblue2}{HTML}{123D7A}
+\definecolor{uygold}{HTML}{C69214}
+\definecolor{uygreen}{HTML}{166534}
+\definecolor{uygray}{HTML}{F5F7FA}
+\definecolor{ink}{HTML}{1F2937}
+\definecolor{muted}{HTML}{64748B}
+\definecolor{softblue}{HTML}{E8F0FF}
+\definecolor{softgold}{HTML}{FFF5D9}
+\definecolor{softgreen}{HTML}{EAF7EE}
+\definecolor{softred}{HTML}{FFF1F2}
+\definecolor{danger}{HTML}{B42318}
+\definecolor{canvas}{HTML}{F8FAFC}
+\definecolor{nodebg}{HTML}{FFFFFF}
+\definecolor{edge}{HTML}{94A3B8}
+
+\hypersetup{colorlinks=true,linkcolor=uyblue,urlcolor=uyblue,citecolor=uyblue,pdftitle={Cahier des charges INF3421 - Next.js n8n},pdfauthor={AZAB A RANGA FRANCK MIGUEL}}
+
+% ------------------ Header/footer ------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textsf{INF3421 - AutoMateLab}}
+\rhead{\textsf{Next.js + Canvas type n8n}}
+\cfoot{\thepage/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ------------------ Titres ------------------
+\titleformat{\chapter}{\Huge\bfseries\color{uyblue}}{\thechapter}{1em}{}
+\titleformat{\section}{\Large\bfseries\color{uyblue2}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\large\bfseries\color{ink}}{\thesubsection}{0.7em}{}
+\titlespacing*{\chapter}{0pt}{-8pt}{18pt}
+
+\setlist[itemize]{leftmargin=*,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=*,itemsep=2pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.16}
+
+\newcommand{\ok}{\textcolor{uygreen}{\ding{51}}}
+\newcommand{\warn}{\textcolor{uygold}{\ding{115}}}
+\newcommand{\ko}{\textcolor{danger}{\ding{55}}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\eps}{\ensuremath{\varepsilon}}
+\newcommand{\appname}{\textbf{AutoMateLab INF3421}}
+
+\tcbset{arc=2mm,boxrule=0.55pt,left=1.5mm,right=1.5mm,top=1.2mm,bottom=1.2mm}
+\newtcolorbox{objectifbox}{colback=softblue,colframe=uyblue,title=Objectif principal,fonttitle=\bfseries}
+\newtcolorbox{decisionbox}{colback=softgold,colframe=uygold,title=Décision recommandée,fonttitle=\bfseries}
+\newtcolorbox{successbox}{colback=softgreen,colframe=uygreen,title=Critère de réussite,fonttitle=\bfseries}
+\newtcolorbox{warningbox}{colback=softred,colframe=danger,title=Point d'attention,fonttitle=\bfseries}
+\newtcolorbox{uiblock}[1]{colback=white,colframe=uyblue,title=#1,fonttitle=\bfseries}
+
+\lstdefinestyle{codeStyle}{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  framerule=0.3pt,
+  backgroundcolor=\color{uygray},
+  keywordstyle=\color{uyblue}\bfseries,
+  commentstyle=\color{uygreen},
+  stringstyle=\color{uygold},
+  showstringspaces=false,
+  columns=fullflexible
+}
+\lstset{style=codeStyle}
+
+\begin{document}
+
+% ------------------ Page de garde ------------------
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[uyblue] (current page.north west) rectangle ([yshift=-4.2cm]current page.north east);
+  \fill[softblue] ([yshift=-4.2cm]current page.north west) rectangle ([yshift=-4.55cm]current page.north east);
+  \draw[uygold,line width=2pt] ([yshift=-4.55cm]current page.north west) -- ([yshift=-4.55cm]current page.north east);
+  \node[opacity=0.07,scale=9,text=white] at ([xshift=7cm,yshift=-2.2cm]current page.north west) {A};
+\end{tikzpicture}
+\begin{center}
+\vspace*{-0.8cm}
+\includegraphics[width=2.3cm]{logo_uy1.png}\\[0.22cm]
+{\color{white}\Large \textbf{Université de Yaoundé I}}\\[-1mm]
+{\color{white}\large Faculté des Sciences - Département d'Informatique}\\[2.0cm]
+{\Huge \textbf{Cahier des charges professionnel}}\\[0.35cm]
+{\LARGE \textbf{AutoMateLab INF3421}}\\[0.25cm]
+{\Large Application Next.js de manipulation d'automates avec interface graphique type n8n}\\[0.25cm]
+{\large UE INF3421 : Langage Formel \& Compilation}\\[0.9cm]
+\begin{tcolorbox}[colback=white,colframe=uyblue,width=0.92\textwidth,boxrule=0.9pt]
+\centering
+\textbf{Vision :} développer un laboratoire web moderne où l'étudiant construit des automates sur un canvas interactif, chaîne les opérations comme des nœuds de workflow, obtient les graphes résultats, les traces pédagogiques et les exports prêts pour le rapport.
+\end{tcolorbox}
+\vspace{0.65cm}
+\begin{tabular}{rl}
+\textbf{Étudiant :} & AZAB A RANGA FRANCK MIGUEL\\
+\textbf{Matricule :} & 23V2227\\
+\textbf{Année académique :} & 2025-2026\\
+\textbf{Document :} & Cahier des charges, UX, architecture, UML, plan Cursor\\
+\textbf{Version :} & 2.0 - Spécification Next.js + canvas type n8n\\
+\textbf{Date :} & \today\\
+\end{tabular}
+\vfill
+{\small Sources pédagogiques : énoncé du TP INF3421, notes de cours INF3421 et TD1 fournis.}
+\end{center}
+\end{titlepage}
+
+\pagenumbering{roman}
+\tableofcontents
+\clearpage
+\pagenumbering{arabic}
+
+\chapter*{Résumé exécutif}
+\addcontentsline{toc}{chapter}{Résumé exécutif}
+
+\begin{objectifbox}
+Réaliser une application web \textbf{Next.js complète}, belle et professionnelle, permettant de créer, visualiser, transformer, minimiser, canoniser et exporter des automates finis. L'interface doit reprendre l'esprit d'un éditeur visuel de workflow : nœuds, connexions, canvas, panneau latéral, historique d'exécution et résultats comparables.
+\end{objectifbox}
+
+Le TP demande une application web conviviale pour implémenter et visualiser plusieurs opérations sur les automates : résolution de systèmes d'équations, conversion AFN vers AFD, extraction d'expression régulière, complétion AFD vers AFDC, identification des états accessibles/co-accessibles/utiles, émondage, conversions avec \eps-transitions, Thompson, Glushkov, minimisation, canonisation et opérations de clôture. Le rendu final est une application web et un rapport de groupe de 10 pages maximum, avec rapport du chef de groupe indiquant la participation de chacun.
+
+\begin{decisionbox}
+\textbf{Stack finale recommandée :} Next.js App Router + TypeScript + Tailwind CSS + shadcn/ui + \code{@xyflow/react} (React Flow) + Zustand + Zod + Vitest. Le moteur algorithmique reste en TypeScript pur dans \code{src/core}. L'interface comporte deux vues fortes : un \textbf{Automate Canvas} pour les états/transitions et un \textbf{Workflow Canvas} inspiré de n8n pour chaîner les opérations.
+\end{decisionbox}
+
+\section*{Pourquoi cette version sera plus forte que les autres}
+\begin{itemize}
+  \item Elle ne se limite pas à des formulaires : elle propose un vrai canvas de graphes avec nœuds, arcs, zoom, mini-map, drag/drop et comparaison avant/après.
+  \item Elle aide à expliquer les algorithmes : chaque opération donne une trace pédagogique exportable.
+  \item Elle exploite Next.js pour une structure professionnelle : routes, layouts, composants server/client, route handlers optionnels et déploiement simple.
+  \item Elle permet une démonstration impressionnante : l'utilisateur dépose un automate, ajoute un nœud \og AFN vers AFD \fg{}, connecte vers \og Minimisation \fg{}, puis lance le workflow.
+\end{itemize}
+
+\section*{Livrables ciblés}
+\begin{itemize}
+  \item Application web responsive et déployée avec lien public.
+  \item Canvas interactif d'automates : création, édition, import/export JSON.
+  \item Canvas de workflow : nœuds d'opérations, connexions, exécution étape par étape.
+  \item Moteur algorithmique testé : conversions, \eps-fermetures, Thompson, Glushkov, minimisation, clôture, canonisation.
+  \item Exports : JSON, PNG/SVG, trace textuelle, snippets pour le rapport.
+  \item Rapport final de 10 pages maximum et rapport chef de groupe.
+\end{itemize}
+
+\chapter{Contexte, périmètre et exigences du TP}
+
+\section{Contexte INF3421}
+L'UE INF3421 traite des langages formels, des automates finis, des expressions régulières et de la compilation. Le TP transforme ces notions théoriques en un outil pratique. L'application doit aider à manipuler les objets du cours tout en rendant les étapes vérifiables par l'enseignant.
+
+\section{Périmètre fonctionnel demandé}
+\begin{longtable}{p{0.30\textwidth}p{0.60\textwidth}}
+\toprule
+\textbf{Fonctionnalité} & \textbf{Ce que l'application doit faire}\\
+\midrule
+Systèmes d'équations & Saisir un système d'équations de langages et afficher l'expression régulière équivalente avec étapes du lemme d'Arden.\\
+AFN vers AFD & Construire l'AFD équivalent par ensembles d'états, avec table de transition générée.\\
+Automate vers regex & Extraire une expression régulière à partir d'un AFD ou AFN.\\
+AFD vers AFDC & Compléter l'automate avec un état puits si des transitions manquent.\\
+États accessibles & Lister et colorer les états atteignables depuis l'initial.\\
+États co-accessibles & Lister et colorer les états pouvant atteindre un final.\\
+États utiles & Calculer l'intersection accessible/co-accessible.\\
+Émondage & Supprimer visuellement et structurellement les états inutiles.\\
+AFD vers AFN & Convertir un AFD en structure AFN pour uniformiser les traitements.\\
+AFN vers \eps-AFN et inverse & Ajouter ou supprimer le support de transitions spontanées quand c'est pertinent.\\
+\eps-fermeture & Calculer la fermeture d'un état ou d'un ensemble d'états.\\
+\eps-AFN vers AFD & Combiner \eps-fermeture et construction par sous-ensembles.\\
+AFD vers \eps-AFN & Conversion triviale pour compatibilité de pipeline.\\
+Thompson pur & Générer un \eps-AFN depuis une expression régulière.\\
+Minimisation & Produire l'AFD minimal équivalent.\\
+Glushkov & Construire un automate par positions depuis une expression régulière.\\
+Canonisation & Renommer/normaliser l'automate pour obtenir une forme stable.\\
+Clôture & Union, intersection, complémentation, concaténation, étoile, différence.\\
+\bottomrule
+\end{longtable}
+
+\section{Périmètre produit proposé}
+\begin{uiblock}{Modules de l'application}
+\begin{enumerate}
+  \item \textbf{Automate Studio} : édition graphique d'états et transitions.
+  \item \textbf{Workflow Studio} : canvas type n8n pour enchaîner des opérations.
+  \item \textbf{Regex Studio} : expression régulière vers automate, Thompson, Glushkov.
+  \item \textbf{Equation Studio} : systèmes d'équations, Arden, regex finale.
+  \item \textbf{Closure Studio} : opérations entre deux automates.
+  \item \textbf{Report Center} : export des graphes, traces et paragraphes prêts pour le rapport.
+\end{enumerate}
+\end{uiblock}
+
+\section{Ce qui est hors périmètre}
+\begin{itemize}
+  \item Authentification utilisateur obligatoire : inutile pour le TP, sauf bonus.
+  \item Base de données obligatoire : le stockage local suffit. Option bonus avec IndexedDB.
+  \item Collaboration temps réel : trop coûteuse pour un TP.
+  \item Backend lourd : non nécessaire pour les calculs d'automates de taille pédagogique.
+\end{itemize}
+
+\chapter{Stack technique Next.js complète}
+
+\section{Décision finale}
+\begin{decisionbox}
+Construire l'application en \textbf{Next.js App Router}. Les pages et layouts seront dans \code{src/app}. Les composants interactifs de canvas seront des \textbf{Client Components}. Les algorithmes seront dans \code{src/core}, indépendants de React et réutilisables dans les tests.
+\end{decisionbox}
+
+\begin{longtable}{p{0.25\textwidth}p{0.27\textwidth}p{0.38\textwidth}}
+\toprule
+\textbf{Besoin} & \textbf{Technologie} & \textbf{Rôle dans le projet}\\
+\midrule
+Framework & Next.js App Router & Routing, layouts, pages, déploiement propre, route handlers optionnels.\\
+Langage & TypeScript strict & Éviter les erreurs sur les automates, transitions et résultats.\\
+Interface & Tailwind CSS & Design rapide, responsive, propre.\\
+Composants UI & shadcn/ui + Radix UI & Boutons, panels, tabs, dialogs, command palette, toast.\\
+Icônes & lucide-react & Icônes modernes pour opérations, états et exports.\\
+Graphes/canvas & \code{@xyflow/react} & Nœuds, arcs, zoom, mini-map, drag/drop, workflow et automate canvas.\\
+Layout auto & dagre ou elkjs & Réorganisation automatique des automates.\\
+État global & Zustand & Automate courant, workflow courant, résultat, historique.\\
+Validation & Zod & Schémas JSON, erreurs lisibles, import sécurisé.\\
+Formulaires & react-hook-form & Formulaires d'états, transitions, paramètres d'algorithme.\\
+Tests unitaires & Vitest & Vérification du moteur algorithmique.\\
+Tests UI bonus & Playwright & Scénarios de démonstration si le temps reste.\\
+Export image & html-to-image / SVG & Captures des graphes pour le rapport.\\
+Stockage local & localStorage puis IndexedDB & Sauvegarde projets et historique sans backend.\\
+Qualité & ESLint + Prettier & Code homogène, propre pour le rendu.\\
+Déploiement & Vercel & Lien public rapide pour démonstration.\\
+\bottomrule
+\end{longtable}
+
+\section{Pourquoi Next.js au lieu de Vite seul}
+\begin{itemize}
+  \item Meilleure architecture de pages : \code{/lab}, \code{/workflow}, \code{/regex}, \code{/equations}, \code{/report}.
+  \item Meilleure finition produit : metadata, layout global, navigation, pages d'aide.
+  \item Possibilité d'ajouter des \code{route handlers} plus tard, par exemple pour générer un export serveur.
+  \item Déploiement Vercel très direct.
+\end{itemize}
+
+\section{Architecture de dépôt recommandée}
+\begin{lstlisting}
+automatelab-inf3421/
++-- src/
+|   +-- app/
+|   |   +-- layout.tsx
+|   |   +-- page.tsx                         # landing / dashboard
+|   |   +-- lab/page.tsx                     # automate canvas
+|   |   +-- workflow/page.tsx                # canvas type n8n
+|   |   +-- regex/page.tsx                   # regex -> automates
+|   |   +-- equations/page.tsx               # Arden / systèmes
+|   |   +-- closure/page.tsx                 # opérations de clôture
+|   |   +-- report/page.tsx                  # exports rapport
+|   |   `-- api/export/route.ts              # bonus: export serveur
+|   +-- components/
+|   |   +-- layout/                          # sidebar, topbar, shell
+|   |   +-- canvas/                          # base React Flow
+|   |   +-- automata/                        # states, edges, editor
+|   |   +-- workflow/                        # operation nodes type n8n
+|   |   +-- algorithms/                      # panels de trace/resultat
+|   |   +-- forms/                           # formulaires automates
+|   |   `-- ui/                              # shadcn/ui
+|   +-- core/                                # moteur pur TypeScript
+|   |   +-- types.ts
+|   |   +-- validators.ts
+|   |   +-- graph-utils.ts
+|   |   +-- accessible.ts
+|   |   +-- trim.ts
+|   |   +-- complete-dfa.ts
+|   |   +-- epsilon-closure.ts
+|   |   +-- nfa-to-dfa.ts
+|   |   +-- enfa-to-dfa.ts
+|   |   +-- minimize.ts
+|   |   +-- regex-parser.ts
+|   |   +-- thompson.ts
+|   |   +-- glushkov.ts
+|   |   +-- automaton-to-regex.ts
+|   |   +-- arden-solver.ts
+|   |   +-- closure-operations.ts
+|   |   `-- canonize.ts
+|   +-- store/                               # Zustand stores
+|   +-- examples/                            # exemples cours/TD
+|   +-- lib/                                 # export, ids, layout auto
+|   `-- tests/                               # tests Vitest
++-- docs/                                    # rapport, captures, cahier
++-- public/
++-- package.json
+`-- README.md
+\end{lstlisting}
+
+\section{Commandes d'installation}
+\begin{lstlisting}
+npx create-next-app@latest automatelab-inf3421 \
+  --ts --tailwind --eslint --app --src-dir --import-alias "@/*"
+
+cd automatelab-inf3421
+npm install @xyflow/react zustand zod react-hook-form lucide-react
+npm install dagre html-to-image file-saver clsx tailwind-merge
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+npx shadcn@latest init
+npx shadcn@latest add button card tabs dialog sheet select input textarea badge scroll-area separator dropdown-menu command toast
+\end{lstlisting}
+
+\chapter{Concept d'interface type n8n}
+
+\section{Principe général}
+L'application doit avoir un style de laboratoire visuel. Le principe n'est pas de copier n8n pixel par pixel, mais de reprendre les bonnes idées : canvas infini, nœuds connectables, panneau de configuration, historique d'exécution, mini-map, zoom et logs.
+
+\begin{uiblock}{Deux canvas complémentaires}
+\begin{itemize}
+  \item \textbf{Automate Canvas} : graphe mathématique de l'automate, avec états et transitions.
+  \item \textbf{Workflow Canvas} : pipeline d'opérations, par exemple \og Importer automate -> AFN vers AFD -> Compléter -> Minimiser -> Exporter \fg{}.
+\end{itemize}
+\end{uiblock}
+
+\section{Maquette globale de l'interface}
+\begin{figure}[H]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[font=\sffamily]
+  \fill[canvas] (0,0) rectangle (16,9);
+  \fill[uyblue] (0,8.25) rectangle (16,9);
+  \node[text=white,anchor=west,font=\bfseries\large] at (0.35,8.62) {AutoMateLab INF3421};
+  \node[text=white,anchor=east] at (15.65,8.62) {Run workflow \quad Export \quad Help};
+  \fill[white] (0,0) rectangle (2.6,8.25);
+  \draw[edge] (2.6,0) -- (2.6,8.25);
+  \node[anchor=west,font=\bfseries] at (0.25,7.8) {Palette};
+  \foreach \y/\t in {7.15/Importer,6.55/AFN vers AFD,5.95/Epsilon fermeture,5.35/Minimiser,4.75/Thompson,4.15/Glushkov,3.55/Exporter} {
+    \draw[rounded corners,fill=uygray,draw=edge] (0.25,\y-0.25) rectangle (2.35,\y+0.18);
+    \node[anchor=west,font=\scriptsize] at (0.38,\y-0.03) {\t};
+  }
+  \fill[white] (12.6,0) rectangle (16,8.25);
+  \draw[edge] (12.6,0) -- (12.6,8.25);
+  \node[anchor=west,font=\bfseries] at (12.85,7.8) {Inspecteur};
+  \draw[rounded corners,fill=uygray,draw=edge] (12.85,6.35) rectangle (15.65,7.35);
+  \node[align=left,font=\scriptsize,anchor=west] at (13.05,6.95) {Node: AFN vers AFD};
+  \node[align=left,font=\scriptsize,anchor=west] at (13.05,6.65) {Status: prêt};
+  \draw[rounded corners,fill=uygray,draw=edge] (12.85,4.65) rectangle (15.65,6.05);
+  \node[align=left,font=\scriptsize,anchor=west] at (13.05,5.65) {Paramètres};
+  \node[align=left,font=\scriptsize,anchor=west] at (13.05,5.35) {- supprimer vides};
+  \node[align=left,font=\scriptsize,anchor=west] at (13.05,5.05) {- nommer ensembles};
+  \draw[rounded corners,fill=uygray,draw=edge] (12.85,1.0) rectangle (15.65,4.3);
+  \node[anchor=west,font=\bfseries\scriptsize] at (13.05,4.0) {Trace};
+  \foreach \y/\t in {3.6/1. Validation OK,3.25/2. Ensemble initial,2.9/3. Move sur a,2.55/4. Move sur b,2.2/5. AFD obtenu} {
+    \node[anchor=west,font=\scriptsize] at (13.05,\y) {\t};
+  }
+  \draw[step=0.5,draw=edge!20] (2.6,0) grid (12.6,8.25);
+  \node[draw=uyblue,thick,rounded corners,fill=nodebg,minimum width=2.3cm,minimum height=1cm,align=center,blur shadow] (n1) at (4.3,6.4) {Importer\\JSON};
+  \node[draw=uyblue,thick,rounded corners,fill=nodebg,minimum width=2.3cm,minimum height=1cm,align=center,blur shadow] (n2) at (7.2,6.4) {AFN\\vers AFD};
+  \node[draw=uyblue,thick,rounded corners,fill=nodebg,minimum width=2.3cm,minimum height=1cm,align=center,blur shadow] (n3) at (10.1,6.4) {Minimiser};
+  \node[draw=uygreen,thick,rounded corners,fill=softgreen,minimum width=2.3cm,minimum height=1cm,align=center,blur shadow] (n4) at (10.1,4.3) {Exporter\\PNG/JSON};
+  \draw[-Latex,line width=1.2pt,draw=uyblue] (n1) -- (n2);
+  \draw[-Latex,line width=1.2pt,draw=uyblue] (n2) -- (n3);
+  \draw[-Latex,line width=1.2pt,draw=uygreen] (n3) -- (n4);
+  \node[anchor=west,font=\scriptsize,text=muted] at (3.0,0.35) {Canvas zoomable + mini-map + contrôles + logs d'exécution};
+\end{tikzpicture}}
+\caption{Maquette d'une interface inspirée des workflows visuels de type n8n.}
+\end{figure}
+
+\section{Design system}
+\begin{longtable}{p{0.24\textwidth}p{0.66\textwidth}}
+\toprule
+\textbf{Élément} & \textbf{Spécification}\\
+\midrule
+Couleurs & Bleu UY1 pour navigation et actions primaires, or pour résultats importants, vert pour succès, rouge doux pour erreurs.\\
+Canvas & Fond gris très clair quadrillé, nœuds blancs, bordures bleues, arcs courbés.\\
+Nœud opération & Titre, icône, statut, entrée/sortie, badge de type : Automate, Regex, Trace, Export.\\
+Nœud automate & Cercle pour état, double cercle pour final, flèche vers initial, badge \eps si transitions spontanées.\\
+Inspecteur & Panneau droit affichant paramètres du nœud, validation, trace et sortie.\\
+Palette & Panneau gauche avec recherche rapide et catégories : import, conversion, analyse, regex, clôture, export.\\
+Command palette & Raccourci Ctrl+K pour ajouter rapidement une opération.\\
+Responsive & Sur mobile, canvas en plein écran, palettes en sheets déroulantes.\\
+\bottomrule
+\end{longtable}
+
+\section{Navigation proposée}
+\begin{itemize}
+  \item \textbf{Dashboard} : description du projet, accès rapide aux modules, exemples de TD.
+  \item \textbf{Automate Studio} : édition directe d'un automate.
+  \item \textbf{Workflow Studio} : pipeline type n8n des opérations.
+  \item \textbf{Regex Studio} : parser, Thompson, Glushkov, conversion inverse.
+  \item \textbf{Equation Studio} : résolution de systèmes d'équations.
+  \item \textbf{Report Center} : exports, captures, résumé des algorithmes, rapport chef de groupe.
+\end{itemize}
+
+\chapter{Exigences fonctionnelles détaillées}
+
+\section{Acteurs}
+\begin{longtable}{p{0.25\textwidth}p{0.65\textwidth}}
+\toprule
+\textbf{Acteur} & \textbf{Rôle}\\
+\midrule
+Étudiant utilisateur & Créer un automate, lancer des opérations, lire les traces, exporter les résultats.\\
+Chef de groupe & Vérifier les tâches, collecter les captures, rédiger le rapport final et le rapport de participation.\\
+Enseignant/évaluateur & Tester la conformité, vérifier les algorithmes, juger l'ergonomie.\\
+Système & Valider les données, exécuter les algorithmes, générer graphes et exports.\\
+\bottomrule
+\end{longtable}
+
+\section{Backlog priorisé}
+\begin{longtable}{p{0.08\textwidth}p{0.28\textwidth}p{0.49\textwidth}p{0.08\textwidth}}
+\toprule
+\textbf{ID} & \textbf{Fonctionnalité} & \textbf{Critère d'acceptation} & \textbf{Priorité}\\
+\midrule
+F01 & Automate Canvas & Ajouter, déplacer, renommer états ; créer transitions ; marquer initial/final. & P0\\
+F02 & Workflow Canvas & Déposer des nœuds d'opérations, connecter les sorties/entrées, exécuter le pipeline. & P0\\
+F03 & Import/export JSON & Un automate exporté puis réimporté reste identique. & P0\\
+F04 & Validation & Erreurs claires : état manquant, symbole absent, AFD non déterministe, transition invalide. & P0\\
+F05 & États accessibles/co-accessibles/utiles & Listes et coloration dans le graphe. & P0\\
+F06 & Émondage & Suppression des états inutiles avec comparaison avant/après. & P0\\
+F07 & AFD vers AFDC & Ajout état puits et transitions manquantes. & P0\\
+F08 & AFN vers AFD & Construction par sous-ensembles + trace tabulaire. & P0\\
+F09 & \eps-fermeture & Fermeture d'un état et d'un ensemble, affichée en table. & P0\\
+F10 & \eps-AFN vers AFD & Résultat déterministe sans transition \eps. & P0\\
+F11 & Minimisation & Partition initiale, raffinements, automate quotient. & P0\\
+F12 & Thompson pur & Regex vers \eps-AFN, affichage construction récursive. & P1\\
+F13 & Glushkov & Regex vers automate de positions, first/last/follow. & P1\\
+F14 & Automate vers regex & Élimination d'états ou système d'équations. & P1\\
+F15 & Arden solver & Saisie et résolution de systèmes d'équations. & P1\\
+F16 & Clôture & Union, intersection, complémentation, concaténation, étoile, différence. & P1\\
+F17 & Canonisation & Renommage stable q0, q1, q2... et ordre stable des transitions. & P2\\
+F18 & Exports rapport & PNG/SVG/JSON + texte de trace prêt à coller. & P2\\
+\bottomrule
+\end{longtable}
+
+\section{Règles métier}
+\begin{enumerate}
+  \item Un AFD a un unique état initial et au plus une destination pour chaque couple $(q,a)$.
+  \item Un AFDC est un AFD où chaque état possède une transition pour chaque symbole de l'alphabet.
+  \item Un AFN peut avoir plusieurs destinations pour le même couple $(q,a)$.
+  \item Un \eps-AFN est un AFN autorisant les transitions spontanées notées \eps.
+  \item Un état accessible est atteignable depuis l'initial ; un état co-accessible peut atteindre un final ; un état utile vérifie les deux.
+  \item La minimisation s'applique sur un AFD, idéalement complété et émondé.
+  \item La complémentation exige un AFD complet avant inversion des états finaux.
+  \item L'interface ne doit jamais modifier l'automate source sans créer un résultat ou une sauvegarde.
+\end{enumerate}
+
+\chapter{Diagrammes UML et flux}
+
+\section{Diagramme de cas d'utilisation}
+\begin{figure}[H]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[font=\sffamily,>=Latex]
+  \tikzstyle{actorhead}=[draw, circle, minimum size=8mm, fill=white]
+  \tikzstyle{usecase}=[draw=uyblue, ellipse, fill=softblue, minimum width=39mm, minimum height=10mm, align=center]
+  \tikzstyle{maincase}=[draw=uyblue, ellipse, fill=softgold, minimum width=45mm, minimum height=11mm, align=center, thick]
+  \tikzstyle{sys}=[draw=uyblue, rounded corners, thick]
+  \node[actorhead] (a) at (0,0) {};
+  \draw (a.south) -- ++(0,-0.7);
+  \draw ($(a.south)+(0,-0.25)$) -- ++(-0.45,-0.35);
+  \draw ($(a.south)+(0,-0.25)$) -- ++(0.45,-0.35);
+  \draw ($(a.south)+(0,-0.7)$) -- ++(-0.4,-0.55);
+  \draw ($(a.south)+(0,-0.7)$) -- ++(0.4,-0.55);
+  \node[below=1.55cm of a] {Étudiant};
+  \node[sys, minimum width=14.6cm, minimum height=8.3cm, anchor=west] at (2,-3.2) {};
+  \node[maincase] (manage) at (5.0,0.0) {Gérer un\\automate};
+  \node[maincase] (workflow) at (9.2,0.0) {Construire un\\workflow};
+  \node[maincase] (export) at (13.2,0.0) {Consulter et\\exporter};
+  \node[usecase] (edit) at (5.0,-1.55) {Créer/importer\\JSON};
+  \node[usecase] (visual) at (5.0,-3.0) {Éditer le graphe\\états/transitions};
+  \node[usecase] (nodes) at (9.2,-1.35) {Ajouter nœuds\\d'opérations};
+  \node[usecase] (run) at (9.2,-2.8) {Exécuter\\le pipeline};
+  \node[usecase] (ops) at (9.2,-4.25) {Conversions, regex,\\clôture, minimisation};
+  \node[usecase] (trace) at (13.2,-1.85) {Lire traces\\pédagogiques};
+  \node[usecase] (files) at (13.2,-3.45) {Exporter\\PNG/SVG/JSON};
+  \draw[->] (a) -- (manage);
+  \draw[->] (a) -- (workflow);
+  \draw[->] (a) -- (export);
+  \draw[->, dashed] (manage) -- (edit);
+  \draw[->, dashed] (manage) -- (visual);
+  \draw[->, dashed] (workflow) -- (nodes);
+  \draw[->, dashed] (workflow) -- (run);
+  \draw[->, dashed] (run) -- (ops);
+  \draw[->, dashed] (export) -- (trace);
+  \draw[->, dashed] (export) -- (files);
+\end{tikzpicture}}
+\caption{Cas d'utilisation principaux.}
+\end{figure}
+
+\section{Flux utilisateur général}
+\begin{figure}[H]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[font=\sffamily,>=Latex,node distance=1.25cm]
+\tikzstyle{flowstep}=[draw=uyblue, rounded corners, fill=softblue, minimum width=33mm, minimum height=10mm, align=center]
+\tikzstyle{decision}=[draw=uygold, diamond, aspect=2, fill=softgold, align=center, inner sep=1pt]
+\node[flowstep] (start) {Choisir un\\module};
+\node[flowstep, right=of start] (input) {Créer/importer\\automate ou regex};
+\node[decision, right=of input] (valid) {Données\\valides ?};
+\node[flowstep, right=of valid] (node) {Ajouter un nœud\\d'opération};
+\node[flowstep, right=of node] (run) {Exécuter\\workflow};
+\node[flowstep, below=of run] (result) {Afficher graphe,\\trace et résultat};
+\node[flowstep, below=of result] (export) {Exporter pour\\rapport/démo};
+\node[flowstep, below=of valid] (fix) {Afficher erreurs\\et corrections};
+\draw[->] (start) -- (input);
+\draw[->] (input) -- (valid);
+\draw[->] (valid) -- node[above]{oui} (node);
+\draw[->] (node) -- (run);
+\draw[->] (run) -- (result);
+\draw[->] (result) -- (export);
+\draw[->] (valid) -- node[right]{non} (fix);
+\draw[->] (fix) -| (input);
+\end{tikzpicture}}
+\caption{Flux global de l'expérience utilisateur.}
+\end{figure}
+
+\section{Architecture applicative Next.js}
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\sffamily,>=Latex,node distance=0.85cm]
+\tikzstyle{box}=[draw=uyblue, rounded corners, fill=softblue, minimum width=43mm, minimum height=10mm, align=center]
+\tikzstyle{core}=[draw=uygreen, rounded corners, fill=softgreen, minimum width=43mm, minimum height=10mm, align=center]
+\tikzstyle{data}=[draw=uygold, rounded corners, fill=softgold, minimum width=43mm, minimum height=10mm, align=center]
+\node[box] (app) {Next.js App Router\\pages + layouts};
+\node[box, right=of app] (client) {Client Components\\canvas interactifs};
+\node[box, right=of client] (ui) {shadcn/ui\\forms + panels};
+\node[box, below=of app] (flow) {React Flow\\Automate + Workflow};
+\node[core, below=of client] (engine) {Core TypeScript pur\\algorithmes};
+\node[core, below=of ui] (trace) {Trace builder\\étapes pédagogiques};
+\node[data, below=of flow] (json) {Zod schemas\\import/export JSON};
+\node[data, below=of engine] (store) {Zustand + storage\\projets locaux};
+\node[data, below=of trace] (export) {Export\\PNG/SVG/rapport};
+\draw[->] (app) -- (client);
+\draw[->] (client) -- (ui);
+\draw[->] (client) -- (flow);
+\draw[->] (flow) -- (engine);
+\draw[->] (ui) -- (engine);
+\draw[->] (engine) -- (trace);
+\draw[->] (trace) -- (export);
+\draw[->] (json) -- (engine);
+\draw[->] (store) -- (flow);
+\draw[->] (engine) -- (store);
+\end{tikzpicture}}
+\caption{Architecture modulaire Next.js.}
+\end{figure}
+
+\section{Diagramme de classes métier}
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\sffamily\scriptsize,>=Latex,node distance=0.7cm]
+\tikzstyle{class}=[draw=uyblue, rectangle split, rectangle split parts=3, rounded corners, fill=white, text width=3.9cm, align=left, inner sep=3pt]
+\node[class] (automaton) {
+\textbf{Automaton}\nodepart{second}
++ id: string\\
++ alphabet: Symbol[]\\
++ states: State[]\\
++ transitions: Transition[]\\
++ kind: DFA|NFA|ENFA\nodepart{third}
++ normalize()\\
++ clone()
+};
+\node[class, right=of automaton] (state) {
+\textbf{State}\nodepart{second}
++ id: string\\
++ label: string\\
++ initial: boolean\\
++ final: boolean\\
++ position?: XY\nodepart{third}
++ rename()\\
++ markFinal()
+};
+\node[class, right=of state] (transition) {
+\textbf{Transition}\nodepart{second}
++ id: string\\
++ from: StateId\\
++ to: StateId\\
++ symbol: Symbol|EPS\nodepart{third}
++ isEpsilon()\\
++ key()
+};
+\node[class, below=of automaton] (workflow) {
+\textbf{Workflow}\nodepart{second}
++ nodes: WorkflowNode[]\\
++ edges: WorkflowEdge[]\\
++ activeRun?: Run\nodepart{third}
++ execute()\\
++ validateGraph()
+};
+\node[class, below=of state] (opnode) {
+\textbf{WorkflowNode}\nodepart{second}
++ id: string\\
++ type: OperationType\\
++ inputRefs: string[]\\
++ params: object\\
++ status: NodeStatus\nodepart{third}
++ run(context)
+};
+\node[class, below=of transition] (result) {
+\textbf{AlgorithmResult}\nodepart{second}
++ result: Automaton|string\\
++ steps: TraceStep[]\\
++ warnings: string[]\\
++ metrics: object\nodepart{third}
++ exportJson()\\
++ toReportText()
+};
+\node[class, below=of opnode] (trace) {
+\textbf{TraceStep}\nodepart{second}
++ title: string\\
++ description: string\\
++ table?: Row[]\\
++ snapshot?: Automaton\nodepart{third}
++ render()
+};
+\node[class, below=of workflow] (regexast) {
+\textbf{RegexAST}\nodepart{second}
++ type: union|concat|star|symbol\\
++ left?: RegexAST\\
++ right?: RegexAST\\
++ value?: string\nodepart{third}
++ nullable()\\
++ firstLastFollow()
+};
+\draw[->] (automaton) -- node[above]{1..*} (state);
+\draw[->] (automaton) -- node[above]{0..*} (transition);
+\draw[->] (workflow) -- (opnode);
+\draw[->] (opnode) -- (result);
+\draw[->] (result) -- (trace);
+\draw[->] (opnode) -- (automaton);
+\draw[->] (opnode) -- (regexast);
+\end{tikzpicture}}
+\caption{Classes et types principaux du domaine.}
+\end{figure}
+
+\section{Séquence : exécuter un workflow d'opérations}
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\sffamily,>=Latex]
+\tikzstyle{life}=[draw=uyblue, fill=softblue, rounded corners, minimum width=29mm, minimum height=8mm, align=center]
+\node[life] (user) at (0,0) {Utilisateur};
+\node[life] (canvas) at (3.1,0) {Workflow Canvas};
+\node[life] (store) at (6.2,0) {Zustand Store};
+\node[life] (engine) at (9.3,0) {Core Engine};
+\node[life] (trace) at (12.4,0) {Trace Panel};
+\node[life] (export) at (15.5,0) {Export Center};
+\foreach \x in {user,canvas,store,engine,trace,export} \draw[dashed] (\x.south) -- ++(0,-6.2);
+\draw[->] (0,-0.8) -- node[above]{cliquer Run} (3.1,-0.8);
+\draw[->] (3.1,-1.5) -- node[above]{workflow ordonné} (6.2,-1.5);
+\draw[->] (6.2,-2.2) -- node[above]{inputs + paramètres} (9.3,-2.2);
+\draw[->] (9.3,-2.9) -- node[above]{résultat nœud 1} (6.2,-2.9);
+\draw[->] (6.2,-3.6) -- node[above]{input nœud 2} (9.3,-3.6);
+\draw[->] (9.3,-4.3) -- node[above]{steps + snapshots} (12.4,-4.3);
+\draw[->] (12.4,-5.0) -- node[above]{graphe + texte rapport} (15.5,-5.0);
+\draw[->] (15.5,-5.7) -- node[above]{PNG/SVG/JSON} (0,-5.7);
+\end{tikzpicture}}
+\caption{Séquence d'exécution d'un workflow.}
+\end{figure}
+
+\chapter{Modèle de données et contrats JSON}
+
+\section{Automate canonique JSON}
+\begin{lstlisting}
+{
+  "id": "A1",
+  "name": "Automate exemple",
+  "kind": "NFA",
+  "alphabet": ["a", "b"],
+  "states": [
+    { "id": "q0", "label": "q0", "initial": true,  "final": false, "x": 0,   "y": 80 },
+    { "id": "q1", "label": "q1", "initial": false, "final": false, "x": 180, "y": 80 },
+    { "id": "q2", "label": "q2", "initial": false, "final": true,  "x": 360, "y": 80 }
+  ],
+  "transitions": [
+    { "id": "t1", "from": "q0", "to": "q0", "symbol": "a" },
+    { "id": "t2", "from": "q0", "to": "q1", "symbol": "b" },
+    { "id": "t3", "from": "q1", "to": "q2", "symbol": "b" }
+  ]
+}
+\end{lstlisting}
+
+\section{Workflow JSON}
+\begin{lstlisting}
+{
+  "id": "wf1",
+  "name": "Conversion et minimisation",
+  "nodes": [
+    { "id": "n1", "type": "inputAutomaton", "position": { "x": 100, "y": 100 } },
+    { "id": "n2", "type": "nfaToDfa", "position": { "x": 380, "y": 100 } },
+    { "id": "n3", "type": "minimizeDfa", "position": { "x": 660, "y": 100 } },
+    { "id": "n4", "type": "export", "position": { "x": 940, "y": 100 } }
+  ],
+  "edges": [
+    { "id": "e1", "source": "n1", "target": "n2" },
+    { "id": "e2", "source": "n2", "target": "n3" },
+    { "id": "e3", "source": "n3", "target": "n4" }
+  ]
+}
+\end{lstlisting}
+
+\section{Types TypeScript essentiels}
+\begin{lstlisting}
+export type SymbolValue = string;
+export const EPSILON = "ε" as const;
+export type AutomatonKind = "DFA" | "NFA" | "ENFA";
+
+export interface State {
+  id: string;
+  label: string;
+  initial?: boolean;
+  final?: boolean;
+  x?: number;
+  y?: number;
+}
+
+export interface Transition {
+  id: string;
+  from: string;
+  to: string;
+  symbol: SymbolValue | typeof EPSILON;
+}
+
+export interface Automaton {
+  id: string;
+  name: string;
+  kind: AutomatonKind;
+  alphabet: SymbolValue[];
+  states: State[];
+  transitions: Transition[];
+}
+
+export interface TraceStep {
+  title: string;
+  description: string;
+  table?: Record<string, unknown>[];
+  snapshot?: Automaton;
+}
+
+export interface AlgorithmResult<T = Automaton | string> {
+  result: T;
+  steps: TraceStep[];
+  warnings: string[];
+  metrics?: Record<string, number | string>;
+}
+\end{lstlisting}
+
+\section{Validation minimale}
+\begin{itemize}
+  \item Chaque état a un identifiant unique.
+  \item Les transitions pointent vers des états existants.
+  \item Les symboles de transition appartiennent à l'alphabet ou sont \eps.
+  \item Un AFD/AFDC ne contient pas de transition \eps.
+  \item Un AFD a exactement un initial et pas deux transitions conflictuelles.
+  \item Un AFDC a toutes les transitions $(q,a)$ définies.
+  \item Le workflow est acyclique pour la première version afin d'éviter les boucles infinies.
+\end{itemize}
+
+\chapter{Spécification algorithmique}
+
+\section{Convention commune}
+Chaque algorithme doit être une fonction pure, sans dépendance React. Elle reçoit un automate ou une expression et retourne un \code{AlgorithmResult}. La trace doit permettre d'expliquer le résultat dans le rapport.
+
+\begin{lstlisting}
+export function nfaToDfa(nfa: Automaton): AlgorithmResult<Automaton> {
+  // 1. validate input
+  // 2. build subset states
+  // 3. create transitions
+  // 4. return DFA + trace steps
+}
+\end{lstlisting}
+
+\section{États accessibles, co-accessibles et utiles}
+\begin{enumerate}
+  \item \textbf{Accessibles} : DFS/BFS depuis l'état initial en suivant toutes les transitions.
+  \item \textbf{Co-accessibles} : inverser le graphe puis DFS/BFS depuis tous les états finaux.
+  \item \textbf{Utiles} : intersection des deux ensembles.
+  \item \textbf{Émondage} : conserver uniquement les états utiles et les transitions entre états utiles.
+\end{enumerate}
+
+\section{Complétion AFD vers AFDC}
+\begin{enumerate}
+  \item Vérifier que l'automate est déterministe.
+  \item Pour chaque état $q$ et chaque symbole $a$, vérifier si $\delta(q,a)$ existe.
+  \item Si une transition manque, créer l'état puits $\bot$.
+  \item Ajouter les transitions manquantes vers $\bot$ et les boucles $\bot \xrightarrow{a} \bot$.
+\end{enumerate}
+
+\section{AFN vers AFD}
+\begin{enumerate}
+  \item L'état initial de l'AFD est $\{q_0\}$.
+  \item Pour un état composite $S$, calculer $Move(S,a)$ pour chaque symbole $a$.
+  \item Chaque ensemble non vide devient un nouvel état composite.
+  \item Un état composite est final si $S \cap F \neq \emptyset$.
+  \item La trace affiche : état composite, symbole, destination et statut final.
+\end{enumerate}
+
+\section{\eps-fermeture et \eps-AFN vers AFD}
+\begin{enumerate}
+  \item $Eclose(T)$ contient $T$ et tous les états atteignables avec uniquement des transitions \eps.
+  \item L'état initial de l'AFD devient $Eclose(\{q_0\})$.
+  \item Pour chaque composite $S$ et symbole $a$, calculer $Eclose(Move(S,a))$.
+  \item Répéter jusqu'à stabilisation.
+\end{enumerate}
+
+\section{Minimisation}
+\begin{enumerate}
+  \item Compléter l'AFD si nécessaire.
+  \item Initialiser deux partitions : finaux et non finaux.
+  \item Raffiner tant que deux états d'un même bloc ne se comportent pas pareil vers les blocs cibles.
+  \item Construire l'automate quotient.
+  \item Canoniser les noms d'états pour une sortie stable.
+\end{enumerate}
+
+\section{Thompson pur}
+\begin{longtable}{p{0.22\textwidth}p{0.68\textwidth}}
+\toprule
+\textbf{Cas} & \textbf{Construction}\\
+\midrule
+Symbole $a$ & Deux états et une transition $a$.\\
+Union $e_1+e_2$ & Nouvel initial, nouveau final, deux branches en parallèle avec transitions \eps.\\
+Concaténation $e_1e_2$ & Final de $e_1$ relié à initial de $e_2$ par transition \eps.\\
+Étoile $e^*$ & Nouveau initial/final, acceptation de \eps et boucle du final interne vers l'initial interne.\\
+\bottomrule
+\end{longtable}
+
+\section{Glushkov}
+\begin{enumerate}
+  \item Numéroter chaque occurrence de symbole.
+  \item Calculer $nullable(e)$, $firstpos(e)$, $lastpos(e)$.
+  \item Calculer $followpos(i)$ pour chaque position.
+  \item Créer un état initial $0$ et un état par position.
+  \item Créer les transitions depuis $0$ vers $firstpos$, puis depuis chaque position vers $followpos$.
+\end{enumerate}
+
+\section{Automate vers expression régulière}
+Méthode recommandée : automate généralisé avec élimination d'états.
+\begin{enumerate}
+  \item Ajouter un nouvel initial $i$ et un nouvel final $f$.
+  \item Ajouter $i \xrightarrow{\eps} q_0$ et chaque ancien final vers $f$.
+  \item Fusionner les transitions parallèles par union.
+  \item Pour éliminer $k$, mettre à jour $R_{p,r}=R_{p,r}+R_{p,k}(R_{k,k})^*R_{k,r}$.
+  \item L'étiquette $R_{i,f}$ est l'expression régulière finale.
+\end{enumerate}
+
+\section{Systèmes d'équations et Arden}
+Pour une équation de forme $X=AX+B$, si $\eps \notin A$, la solution minimale est $X=A^*B$. Pour un système, on isole une variable, on applique Arden, on substitue dans les autres équations, puis on remonte.
+
+\section{Opérations de clôture}
+\begin{longtable}{p{0.24\textwidth}p{0.62\textwidth}}
+\toprule
+\textbf{Opération} & \textbf{Méthode}\\
+\midrule
+Union & Nouvel initial avec transitions \eps vers les deux automates ou produit selon besoin.\\
+Intersection & Produit cartésien ; final si les deux composantes sont finales.\\
+Complément & Compléter l'AFD puis inverser finaux/non finaux.\\
+Concaténation & Relier les finaux du premier à l'initial du second par \eps.\\
+Étoile & Ajouter nouvel initial/final et rebouclage par \eps.\\
+Différence & $L(A) \setminus L(B)=L(A) \cap \overline{L(B)}$.\\
+\bottomrule
+\end{longtable}
+
+\chapter{Composants React/Next.js à produire}
+
+\section{Layout principal}
+\begin{longtable}{p{0.26\textwidth}p{0.64\textwidth}}
+\toprule
+\textbf{Composant} & \textbf{Responsabilité}\\
+\midrule
+\code{AppShell} & Structure globale : sidebar, topbar, zone contenu.\\
+\code{SidebarNav} & Navigation Dashboard, Automate, Workflow, Regex, Equations, Report.\\
+\code{Topbar} & Boutons Run, Save, Export, Theme, Help.\\
+\code{CommandMenu} & Ajout rapide d'opérations avec Ctrl+K.\\
+\code{ThemeProvider} & Mode clair/sombre.\\
+\bottomrule
+\end{longtable}
+
+\section{Canvas et graphes}
+\begin{longtable}{p{0.30\textwidth}p{0.60\textwidth}}
+\toprule
+\textbf{Composant} & \textbf{Rôle}\\
+\midrule
+\code{AutomatonCanvas} & Affiche les états et transitions avec React Flow.\\
+\code{StateNode} & Nœud d'état : initial, final, utile, puits, sélectionné.\\
+\code{TransitionEdge} & Arc courbé avec symbole, support boucles et multi-arcs.\\
+\code{WorkflowCanvas} & Canvas type n8n pour chaîner les opérations.\\
+\code{OperationNode} & Nœud d'opération avec entrée, sortie, statut, icône.\\
+\code{NodeInspector} & Paramètres et résultats du nœud sélectionné.\\
+\code{TracePanel} & Affichage des étapes de calcul.\\
+\code{ComparisonView} & Graphe avant/après pour conversions.\\
+\bottomrule
+\end{longtable}
+
+\section{Stores Zustand}
+\begin{lstlisting}
+interface AutomatonStore {
+  current: Automaton | null;
+  selectedStateId?: string;
+  selectedTransitionId?: string;
+  setAutomaton(a: Automaton): void;
+  addState(s: State): void;
+  addTransition(t: Transition): void;
+  applyResult(result: Automaton): void;
+}
+
+interface WorkflowStore {
+  workflow: Workflow;
+  selectedNodeId?: string;
+  runHistory: Run[];
+  addOperation(type: OperationType): void;
+  connect(source: string, target: string): void;
+  runWorkflow(): Promise<void>;
+}
+\end{lstlisting}
+
+\chapter{Plan d'implémentation Cursor sans gaspiller les tokens}
+
+\section{Règle de travail}
+\begin{decisionbox}
+Ne pas demander à Cursor de générer toute l'application d'un coup. Travailler par lots courts : types, validateurs, algorithmes, tests, puis UI. Chaque demande doit préciser les fichiers à modifier et les critères d'acceptation.
+\end{decisionbox}
+
+\section{Ordre exact de développement}
+\begin{longtable}{p{0.08\textwidth}p{0.28\textwidth}p{0.50\textwidth}p{0.08\textwidth}}
+\toprule
+\textbf{Lot} & \textbf{Objectif} & \textbf{Fichiers principaux} & \textbf{Durée}\\
+\midrule
+1 & Initialisation Next.js & App Router, Tailwind, shadcn, layout, thème & 0.5 j\\
+2 & Types + validation & \code{src/core/types.ts}, \code{validators.ts}, tests & 0.5 j\\
+3 & Core graph utils & parcours, transitions, normalisation, canonisation simple & 0.5 j\\
+4 & États utiles & accessible, co-accessible, useful, trim & 0.5 j\\
+5 & AFDC + AFN vers AFD & complete-dfa, nfa-to-dfa, traces & 1 j\\
+6 & \eps-fermeture + \eps-AFN & epsilon-closure, enfa-to-dfa & 1 j\\
+7 & Minimisation & partitions, quotient, tests & 1 j\\
+8 & Regex parser & tokens, AST, erreurs claires & 1 j\\
+9 & Thompson + Glushkov & constructions et traces & 1.5 j\\
+10 & Automate vers regex + Arden & élimination d'états, systèmes & 1.5 j\\
+11 & Automate Canvas & React Flow, StateNode, TransitionEdge & 1.5 j\\
+12 & Workflow Canvas & OperationNode, connections, run engine & 1.5 j\\
+13 & Finition & exports, dashboard, responsive, README, déploiement & 1 j\\
+\bottomrule
+\end{longtable}
+
+\section{Prompt maître Cursor}
+\begin{lstlisting}
+Tu es un ingénieur Next.js/TypeScript senior. Nous développons AutoMateLab INF3421.
+Stack: Next.js App Router + TypeScript strict + Tailwind + shadcn/ui + @xyflow/react + Zustand + Zod + Vitest.
+Objectif: application web de manipulation d'automates avec une interface type n8n: canvas, nœuds d'opérations, connexions, traces et exports.
+Contraintes:
+- Le moteur algorithmique dans src/core doit rester pur, sans React.
+- Chaque algorithme retourne AlgorithmResult avec result, steps, warnings, metrics.
+- Ajouter des tests Vitest pour chaque fonction core.
+- Les composants canvas doivent être des Client Components.
+- Ne modifie que les fichiers demandés.
+- Priorité: code lisible, typé, modulaire, testable.
+\end{lstlisting}
+
+\section{Prompt lot 1 : initialisation UI}
+\begin{lstlisting}
+Crée l'architecture Next.js suivante:
+- src/app/layout.tsx, page.tsx
+- src/app/lab/page.tsx
+- src/app/workflow/page.tsx
+- src/app/regex/page.tsx
+- src/app/equations/page.tsx
+- src/app/report/page.tsx
+- src/components/layout/AppShell.tsx, SidebarNav.tsx, Topbar.tsx
+Utilise Tailwind + shadcn/ui. Design bleu UY1, blanc, gris clair, or discret.
+Ajoute une sidebar, une topbar avec Run, Export, Help, Theme.
+Ne branche pas encore les algorithmes.
+\end{lstlisting}
+
+\section{Prompt lot 2 : types et validateurs}
+\begin{lstlisting}
+Crée src/core/types.ts et src/core/validators.ts.
+Implémente Automaton, State, Transition, Workflow, WorkflowNode, TraceStep, AlgorithmResult.
+Implémente validateAutomaton, isDFA, isCompleteDFA, normalizeAutomaton.
+Ajoute des tests Vitest: états dupliqués, transition vers état inconnu, symbole hors alphabet, epsilon dans AFD, AFD non déterministe.
+\end{lstlisting}
+
+\section{Prompt lot 3 : algorithms P0}
+\begin{lstlisting}
+Implémente dans src/core:
+- accessible.ts: getAccessibleStates, getCoAccessibleStates, getUsefulStates
+- trim.ts: trimAutomaton
+- complete-dfa.ts: completeDfa
+- epsilon-closure.ts: epsilonClosure
+- nfa-to-dfa.ts: nfaToDfa
+- enfa-to-dfa.ts: enfaToDfa
+Chaque fonction doit retourner ou produire une trace pédagogique.
+Ajoute des tests pour chaque cas.
+\end{lstlisting}
+
+\section{Prompt lot 4 : canvas automate}
+\begin{lstlisting}
+Crée un AutomatonCanvas avec @xyflow/react.
+Fichiers:
+- src/components/automata/AutomatonCanvas.tsx
+- StateNode.tsx
+- TransitionEdge.tsx
+- AutomatonToolbar.tsx
+- AutomatonInspector.tsx
+Exigences:
+- état initial: badge/arrow "start"
+- état final: double cercle visuel
+- état utile: vert, inutile: gris/rouge doux
+- support transitions boucles et transitions multiples
+- boutons: auto layout, zoom, fit view, export image
+\end{lstlisting}
+
+\section{Prompt lot 5 : workflow type n8n}
+\begin{lstlisting}
+Crée WorkflowCanvas avec @xyflow/react.
+Fichiers:
+- src/components/workflow/WorkflowCanvas.tsx
+- OperationNode.tsx
+- OperationPalette.tsx
+- NodeInspector.tsx
+- RunTracePanel.tsx
+Nœuds: InputAutomaton, NfaToDfa, EnfaToDfa, CompleteDfa, Trim, Minimize, Thompson, Glushkov, Export.
+Chaque nœud affiche statut: idle, running, success, error.
+L'exécution suit l'ordre topologique des connexions.
+\end{lstlisting}
+
+\chapter{Tests, qualité et démonstration}
+
+\section{Jeux de tests minimaux}
+\begin{longtable}{p{0.25\textwidth}p{0.40\textwidth}p{0.25\textwidth}}
+\toprule
+\textbf{Test} & \textbf{Entrée} & \textbf{Résultat attendu}\\
+\midrule
+AFD complet & 2 états, alphabet \{a,b\}, toutes transitions présentes & Aucun puits ajouté.\\
+AFD incomplet & Transition manquante depuis q1 sur b & Ajout de $\bot$.\\
+Accessibilité & q2 isolé & q2 non accessible.\\
+Co-accessibilité & q3 ne mène à aucun final & q3 non co-accessible.\\
+AFN vers AFD & q0 --a--> q0 et q1 & état composite \{q0,q1\}.\\
+\eps-fermeture & q0 --\eps--> q1 --\eps--> q2 & fermeture(q0)=\{q0,q1,q2\}.\\
+Minimisation & deux états équivalents & fusion en un bloc.\\
+Thompson & $(a+b)^*abb$ & \eps-AFN avec initial et final uniques.\\
+Glushkov & $ab^*$ & automate de positions sans \eps.\\
+Workflow & Input -> AFN vers AFD -> Minimize -> Export & chaque nœud passe success.\\
+\bottomrule
+\end{longtable}
+
+\section{Critères non fonctionnels}
+\begin{longtable}{p{0.24\textwidth}p{0.66\textwidth}}
+\toprule
+\textbf{Critère} & \textbf{Exigence}\\
+\midrule
+Performance & Automates de 50 états manipulables sans blocage visible.\\
+Robustesse & Toute erreur est affichée dans un toast et dans l'inspecteur.\\
+Lisibilité & Chaque résultat a un graphe, une table et une trace.\\
+Responsive & Sur mobile, sidebar et inspecteur deviennent des sheets.\\
+Maintenabilité & Fonctions core pures, tests unitaires, fichiers courts.\\
+Accessibilité & Contraste lisible, boutons nommés, navigation clavier minimale.\\
+Déploiement & Build Next.js sans erreur, lien public, README complet.\\
+\bottomrule
+\end{longtable}
+
+\section{Scénario de démonstration fort}
+\begin{enumerate}
+  \item Ouvrir Dashboard et charger l'exemple $(a+b)^*abb$.
+  \item Dans Regex Studio, générer l'automate de Thompson.
+  \item Envoyer le résultat dans Workflow Studio.
+  \item Connecter : Thompson -> \eps-AFN vers AFD -> Compléter -> Minimiser -> Canoniser -> Export.
+  \item Lancer le workflow et montrer chaque nœud qui passe en vert.
+  \item Ouvrir la comparaison avant/après pour l'AFD minimisé.
+  \item Exporter PNG + JSON + trace textuelle pour le rapport.
+\end{enumerate}
+
+\chapter{Plan du rapport final de 10 pages}
+
+\section{Structure recommandée}
+\begin{longtable}{p{0.15\textwidth}p{0.70\textwidth}}
+\toprule
+\textbf{Pages} & \textbf{Contenu}\\
+\midrule
+1 & Page de garde + résumé du projet.\\
+2 & Objectifs du TP et choix de la stack Next.js.\\
+3 & Architecture globale et modèle de données.\\
+4 & Interface graphique type workflow et Automate Canvas.\\
+5 & Conversions AFN/\eps-AFN vers AFD et \eps-fermetures.\\
+6 & États accessibles, co-accessibles, utiles, émondage et AFDC.\\
+7 & Minimisation, canonisation et opérations de clôture.\\
+8 & Expressions régulières : Thompson, Glushkov, automate vers regex.\\
+9 & Tests, captures, validation des résultats.\\
+10 & Conclusion, limites, perspectives.\\
+Annexe & Rapport chef de groupe avec pourcentages de participation.\\
+\bottomrule
+\end{longtable}
+
+\section{Tableau de participation}
+\begin{longtable}{p{0.30\textwidth}p{0.38\textwidth}p{0.12\textwidth}p{0.12\textwidth}}
+\toprule
+\textbf{Membre} & \textbf{Tâches réalisées} & \textbf{Preuves} & \textbf{\%}\\
+\midrule
+AZAB A RANGA FRANCK MIGUEL & Cahier des charges, architecture, moteur algorithmique, intégration UI, rapport & commits, captures & 00\\
+Membre 2 & À compléter & commits & 00\\
+Membre 3 & À compléter & commits & 00\\
+Membre 4 & À compléter & commits & 00\\
+\bottomrule
+\end{longtable}
+
+\chapter{Définition de terminé}
+
+\begin{successbox}
+Une fonctionnalité est terminée seulement si elle est accessible dans l'interface, validée par des tests, documentée par une trace pédagogique, exportable et démontrable devant l'enseignant.
+\end{successbox}
+
+\begin{enumerate}
+  \item L'opération est disponible sous forme de bouton ou de nœud workflow.
+  \item Les entrées invalides sont détectées avant exécution.
+  \item Le résultat est affiché sous forme de graphe et de table.
+  \item La trace explique au moins les étapes principales.
+  \item Un test unitaires Vitest couvre un cas normal et un cas limite.
+  \item Le résultat peut être exporté ou copié pour le rapport.
+\end{enumerate}
+
+\chapter*{Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+Cette version du cahier des charges transforme le TP INF3421 en véritable produit web : une application Next.js moderne, visuelle et pédagogique. L'interface type n8n donne un avantage important pour la démonstration, car elle permet de chaîner les opérations sur les automates comme un pipeline clair et interactif. La stratégie de développement reste réaliste : moteur TypeScript pur, tests, composants React Flow, puis finition UI. En suivant les lots Cursor proposés, l'agent de codage peut produire rapidement un résultat beau, maintenable et supérieur à une simple application de formulaires.
+
+\appendix
+\chapter{Annexe : checklist de livraison}
+\begin{itemize}
+  \item \ok{} Le projet démarre avec \code{npm run dev}.
+  \item \ok{} Le build passe avec \code{npm run build}.
+  \item \ok{} Les tests passent avec \code{npm test} ou \code{npm run test}.
+  \item \ok{} Au moins un workflow complet fonctionne de bout en bout.
+  \item \ok{} Les captures exportées sont lisibles.
+  \item \ok{} Le README contient installation, fonctionnalités, stack, auteurs, lien déployé.
+  \item \ok{} Le rapport final fait 10 pages maximum.
+  \item \ok{} Le rapport chef de groupe est joint avec pourcentages.
+\end{itemize}
+
+\chapter{Annexe : exemple de README minimal}
+\begin{lstlisting}
+# AutoMateLab INF3421
+
+Application web Next.js pour manipuler les automates finis et les expressions régulières.
+
+## Stack
+Next.js, TypeScript, Tailwind CSS, shadcn/ui, @xyflow/react, Zustand, Zod, Vitest.
+
+## Installation
+npm install
+npm run dev
+
+## Tests
+npm run test
+
+## Build
+npm run build
+
+## Fonctionnalités
+- Automate Canvas
+- Workflow Canvas type n8n
+- AFN vers AFD
+- epsilon-fermeture
+- epsilon-AFN vers AFD
+- AFD vers AFDC
+- états utiles et émondage
+- minimisation
+- Thompson
+- Glushkov
+- automate vers expression régulière
+- opérations de clôture
+
+## Auteurs
+AZAB A RANGA FRANCK MIGUEL et membres du groupe.
+\end{lstlisting}
+
+\end{document}
