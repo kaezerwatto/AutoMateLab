@@ -225,13 +225,19 @@ export function AutomatonInspector() {
       {/* Validation */}
       <section className="space-y-2">
         <div className="flex items-center gap-2">
-          {report.valid ? (
-            <CheckCircle2 size={16} className="text-[var(--color-success)]" />
-          ) : (
+          {!report.valid ? (
             <XCircle size={16} className="text-[var(--color-danger)]" />
+          ) : report.issues.length > 0 ? (
+            <CheckCircle2 size={16} className="text-[var(--color-warning)]" />
+          ) : (
+            <CheckCircle2 size={16} className="text-[var(--color-success)]" />
           )}
           <h3 className="text-sm font-semibold text-[var(--color-text)]">
-            Validation {report.valid ? "OK" : "à corriger"}
+            {!report.valid
+              ? "Validation à corriger"
+              : report.issues.length > 0
+              ? `Validation OK · ${report.issues.length} remarque(s)`
+              : "Validation OK"}
           </h3>
         </div>
         {report.issues.length === 0 ? (

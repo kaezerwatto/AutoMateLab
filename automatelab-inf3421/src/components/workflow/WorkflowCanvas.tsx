@@ -57,6 +57,7 @@ function Inner() {
 
   return (
     <ReactFlow
+      className="h-full w-full"
       nodes={rfNodes}
       edges={rfEdges}
       nodeTypes={nodeTypes}
@@ -80,10 +81,12 @@ function Inner() {
   );
 }
 
-export function WorkflowCanvas() {
+export function WorkflowCanvas({ className }: { className?: string }) {
   return (
-    <ReactFlowProvider>
-      <Inner />
-    </ReactFlowProvider>
+    <div className={className ?? "h-full min-h-0 w-full"}>
+      <ReactFlowProvider>
+        <Inner />
+      </ReactFlowProvider>
+    </div>
   );
 }

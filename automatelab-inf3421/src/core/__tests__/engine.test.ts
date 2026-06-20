@@ -278,6 +278,19 @@ describe("Arden", () => {
     const r = solveArden(["X = aX + b"]);
     expect(r.result.replace(/[()]/g, "")).toContain("a*b");
   });
+
+  it("normalise les alias pratiques du mot vide", () => {
+    const r = solveArden(["X = aX + epsilon"]);
+    expect(r.result).toContain("a*");
+  });
+
+  it("rejette une variable minuscule au membre gauche", () => {
+    expect(() => solveArden(["z = aX + ε", "X = b"])).toThrow(/Variable invalide/);
+  });
+
+  it("rejette une variable utilisée sans équation", () => {
+    expect(() => solveArden(["X = aY + ε"])).toThrow(/Variable non déclarée/);
+  });
 });
 
 describe("clôtures", () => {

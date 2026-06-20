@@ -4,7 +4,7 @@ import { Play, RotateCcw, Save, Loader2, Terminal, SlidersHorizontal } from "luc
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WorkflowCanvas } from "@/components/workflow/WorkflowCanvas";
 import { OperationPalette } from "@/components/workflow/OperationPalette";
 import { NodeInspector } from "@/components/workflow/NodeInspector";
@@ -47,34 +47,86 @@ export default function WorkflowPage() {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-[calc(100dvh-4rem)] flex-col">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface)]/50 p-3">
-        <div className="flex items-center gap-2">
-          <Button variant="primary" size="sm" onClick={handleRun} disabled={running}>
-            {running ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
-            {running ? "Exécution…" : "Lancer le workflow"}
-          </Button>
-          <Button variant="secondary" size="sm" onClick={reset}>
-            <RotateCcw size={15} /> Réinitialiser
-          </Button>
-          <Button variant="ghost" size="sm" onClick={handleSave}>
-            <Save size={15} /> {saved ? "Enregistré" : "Enregistrer"}
-          </Button>
+      <div className="shrink-0 border-b border-[var(--color-border)] bg-[var(--color-surface)]/50 p-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="-mx-3 w-[calc(100%+1.5rem)] overflow-x-auto px-3 pb-1 sm:mx-0 sm:w-auto sm:overflow-visible sm:px-0 sm:pb-0">
+            <div className="flex w-max items-center gap-2 sm:w-auto">
+              <Button variant="primary" size="sm" onClick={handleRun} disabled={running}>
+                {running ? <Loader2 size={15} className="animate-spin" /> : <Play size={15} />}
+                {running ? "Exécution…" : "Lancer le workflow"}
+              </Button>
+              <Button variant="secondary" size="sm" onClick={reset}>
+                <RotateCcw size={15} /> Réinitialiser
+              </Button>
+              <Button variant="ghost" size="sm" onClick={handleSave}>
+                <Save size={15} /> {saved ? "Enregistré" : "Enregistrer"}
+              </Button>
+            </div>
+          </div>
+          <Badge variant="cyan" className="max-w-full truncate sm:max-w-[18rem]">
+            Source : {current.name}
+          </Badge>
         </div>
-        <Badge variant="cyan">Source : {current.name}</Badge>
       </div>
 
-      <div className="flex min-h-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Palette */}
         <aside className="hidden w-64 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)]/40 md:block">
           <OperationPalette onAdd={(t) => addOperation(t)} />
         </aside>
 
         {/* Canvas */}
-        <div className="min-w-0 flex-1">
-          <WorkflowCanvas />
+        <div className="relative min-h-[360px] min-w-0 flex-1 lg:min-h-0">
+          <WorkflowCanvas className="absolute inset-0" />
         </div>
+
+        <section className="h-[min(40dvh,24rem)] min-h-64 shrink-0 overflow-hidden border-t border-[var(--color-border)] bg-[var(--color-surface)]/40 lg:hidden">
+          <Tabs value={tab} onValueChange={setTab} className="flex h-full flex-col">
+            <div className="border-b border-[var(--color-border)] p-3">
+              <TabsList className="w-full">
+                <TabsTrigger value="palette" className="flex-1 md:hidden">
+                  Opérations
+                </TabsTrigger>
+                <TabsTrigger value="inspector" className="flex-1">
+                  <SlidersHorizontal size={14} className="mr-1 inline" /> Inspecteur
+                </TabsTrigger>
+                <TabsTrigger value="logs" className="flex-1">
+                  <Terminal size={14} className="mr-1 inline" /> Logs
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            <TabsContent value="palette" className="min-h-0 flex-1 overflow-y-auto md:hidden">
+              <OperationPalette onAdd={(t) => addOperation(t)} />
+            </TabsContent>
+            <TabsContent value="inspector" className="min-h-0 flex-1 overflow-y-auto">
+              <NodeInspector onViewResult={(title, result) => setDialog({ title, result })} />
+            </TabsContent>
+            <TabsContent value="logs" className="min-h-0 flex-1 overflow-y-auto p-3 font-mono text-xs">
+              {log.length === 0 ? (
+                <p className="text-[var(--color-muted)]">Lancez le workflow pour voir les logs.</p>
+              ) : (
+                <ul className="space-y-1">
+                  {log.map((l, i) => (
+                    <li
+                      key={i}
+                      className={
+                        l.startsWith("OK")
+                          ? "text-[var(--color-success)]"
+                          : l.startsWith("ERREUR")
+                          ? "text-[var(--color-danger)]"
+                          : "text-[var(--color-muted)]"
+                      }
+                    >
+                      {l}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </TabsContent>
+          </Tabs>
+        </section>
 
         {/* Inspecteur + logs */}
         <aside className="hidden w-80 shrink-0 border-l border-[var(--color-border)] bg-[var(--color-surface)]/40 lg:flex lg:flex-col">

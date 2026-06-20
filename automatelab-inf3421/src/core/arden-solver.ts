@@ -15,6 +15,7 @@ import { AlgorithmResult, LanguageEquation, TraceStep } from "./types";
 
 const EMPTY = "∅";
 const EPS = "ε";
+const VARIABLE_RE = /^[A-Z][A-Z0-9_]*$/;
 
 function rUnion(a: string, b: string): string {
   if (a === EMPTY) return b;
@@ -51,23 +52,59 @@ interface Equation {
   constant: string;
 }
 
+function normalizeEquationInput(raw: string): string {
+  return raw
+    .replace(/\b(expsilon|epsilon|eps|varepsilon|lambda|empty-word|mot\s+vide)\b/gi, EPS)
+    .replace(/λ/g, EPS)
+    .replace(/&/g, EPS)
+    .replace(/∅/g, EMPTY)
+    .replace(/→|⇒|:=/g, "=")
+    .replace(/·/g, "");
+}
+
+function assertValidVariable(variable: string, raw: string): void {
+  if (!VARIABLE_RE.test(variable)) {
+    throw new Error(
+      `Variable invalide « ${variable} » dans « ${raw} ». Utilisez une variable en MAJUSCULES, par exemple X, Y ou Z.`,
+    );
+  }
+}
+
+function findTrailingVariable(term: string, variables: string[]): string | undefined {
+  return variables.find((v) => {
+    if (term !== v && !term.endsWith(v)) return false;
+    const previous = term[term.length - v.length - 1];
+    return !previous || !/[A-Z0-9_]/.test(previous);
+  });
+}
+
 function parseEquation(raw: string, variables: Set<string>): Equation {
-  const [lhs, rhs] = raw.split("=");
-  if (!rhs) throw new Error(`Équation invalide : « ${raw} » (attendu X = …).`);
+  const normalized = normalizeEquationInput(raw);
+  const parts = normalized.split("=");
+  if (parts.length !== 2 || parts.some((part) => part.trim() === "")) {
+    throw new Error(`Équation invalide : « ${raw} » (attendu X = …).`);
+  }
+  const [lhs, rhs] = parts;
   const variable = lhs.trim();
+  assertValidVariable(variable, raw);
   const coeffs = new Map<string, string>();
   let constant = EMPTY;
+  const orderedVariables = [...variables].sort((a, b) => b.length - a.length);
 
   const terms = splitTopLevel(rhs.trim());
   for (const term of terms) {
     const t = term.trim();
     if (t === "") continue;
     // Cherche une variable en suffixe du terme
-    const found = [...variables].find((v) => t === v || t.endsWith(v));
-    if (found && (t === found || /[^A-Z]/.test(t[t.length - found.length - 1] ?? "x"))) {
+    const found = findTrailingVariable(t, orderedVariables);
+    if (found) {
       const coeffRaw = t.slice(0, t.length - found.length).trim();
       const coeff = coeffRaw === "" ? EPS : coeffRaw;
       coeffs.set(found, rUnion(coeffs.get(found) ?? EMPTY, coeff));
+    } else if (/[A-Z][A-Z0-9_]*/.test(t)) {
+      throw new Error(
+        `Variable non déclarée dans le terme « ${t} ». Chaque variable utilisée à droite doit avoir son équation.`,
+      );
     } else {
       constant = rUnion(constant, t === "" ? EPS : t);
     }
@@ -96,13 +133,16 @@ export function solveArden(
   target?: string,
 ): AlgorithmResult<string> {
   const raws = (equations as (LanguageEquation | string)[]).map((e) =>
-    typeof e === "string" ? e : e.raw,
+    normalizeEquationInput(typeof e === "string" ? e : e.raw),
   );
   // Collecte des variables (membre gauche)
   const variables = new Set<string>();
   for (const r of raws) {
     const lhs = r.split("=")[0]?.trim();
-    if (lhs) variables.add(lhs);
+    if (lhs) {
+      assertValidVariable(lhs, r);
+      variables.add(lhs);
+    }
   }
   if (variables.size === 0) {
     throw new Error("Aucune variable détectée (membre gauche manquant).");

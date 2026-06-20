@@ -4,7 +4,8 @@
  */
 import { z } from "zod";
 import { Automaton, AutomatonKind, EPSILON } from "./types";
-import { cloneAutomaton, getInitialStates } from "./graph-utils";
+import { cloneAutomaton, getFinalStates, getInitialStates } from "./graph-utils";
+import { getAccessibleStates, getCoAccessibleStates } from "./accessible";
 
 /* ------------------------------------------------------------------ */
 /* Schémas Zod                                                         */
@@ -121,6 +122,64 @@ export function validateAutomaton(a: Automaton): ValidationReport {
           message: `Non-déterminisme : ${from} possède ${n} transitions sur « ${sym} ».`,
         });
       }
+    }
+  }
+
+  /* ------- Avertissements (non bloquants, mais informatifs) ---------- */
+
+  // a. Aucun état final
+  if (getFinalStates(a).length === 0) {
+    issues.push({
+      level: "warning",
+      message: "Aucun état final : le langage reconnu est vide.",
+    });
+  }
+
+  // b. AFD incomplet (transition manquante pour un couple (état, symbole))
+  if (a.kind === "DFA" && a.alphabet.length > 0) {
+    const missing: string[] = [];
+    for (const s of a.states) {
+      for (const sym of a.alphabet) {
+        const has = a.transitions.some((t) => t.from === s.id && t.symbol === sym);
+        if (!has) missing.push(`${s.label} sur « ${sym} »`);
+      }
+    }
+    if (missing.length > 0) {
+      issues.push({
+        level: "warning",
+        message: `AFD incomplet : ${missing.length} transition(s) manquante(s) (ex. ${missing
+          .slice(0, 2)
+          .join(", ")}…). Utilisez « Compléter (AFDC) ».`,
+      });
+    }
+  }
+
+  // c. États inaccessibles (depuis l'initial)
+  if (initials.length > 0) {
+    const accessible = getAccessibleStates(a);
+    const unreachable = a.states.filter((s) => !accessible.has(s.id)).map((s) => s.label);
+    if (unreachable.length > 0) {
+      issues.push({
+        level: "warning",
+        message: `État(s) inaccessible(s) : ${unreachable.join(", ")}.`,
+      });
+    }
+  }
+
+  // d. États inutiles (accessibles mais non co-accessibles)
+  if (getFinalStates(a).length > 0) {
+    const accessible = getAccessibleStates(a);
+    const coAccessible = getCoAccessibleStates(a);
+    const useless = a.states
+      .filter((s) => accessible.has(s.id) && !coAccessible.has(s.id))
+      .map((s) => s.label);
+    if (useless.length > 0) {
+      issues.push({
+        level: "warning",
+        message: `État(s) inutile(s) (ne mènent à aucun final) : ${useless.join(
+          ", ",
+        )}. Utilisez « Émonder ».`,
+      });
     }
   }
 

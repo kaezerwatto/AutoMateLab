@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Workflow, Network, Wand2, AlertCircle } from "lucide-react";
+import { Workflow, Network, Wand2, AlertCircle, Keyboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +19,23 @@ export default function RegexPage() {
   const [expr, setExpr] = useState("(a+b)*abb");
   const [result, setResult] = useState<{ title: string; result: AlgorithmResult } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const insertText = (snippet: string) => {
+    const input = inputRef.current;
+    if (!input) {
+      setExpr((value) => `${value}${snippet}`);
+      return;
+    }
+    const start = input.selectionStart ?? expr.length;
+    const end = input.selectionEnd ?? expr.length;
+    setExpr((value) => `${value.slice(0, start)}${snippet}${value.slice(end)}`);
+    requestAnimationFrame(() => {
+      input.focus();
+      const next = start + snippet.length;
+      input.setSelectionRange(next, next);
+    });
+  };
 
   const run = (kind: "thompson" | "glushkov") => {
     try {
@@ -39,12 +56,15 @@ export default function RegexPage() {
             <Label>Expression régulière</Label>
             <div className="flex flex-col gap-2 sm:flex-row">
               <Input
+                ref={inputRef}
                 value={expr}
-                onChange={(e) => setExpr(e.target.value)}
+                onChange={(e) =>
+                  setExpr(e.target.value.replace(/\b(epsilon|eps|expsilon|lambda)\b/gi, "ε").replace(/λ|&/g, "ε"))
+                }
                 placeholder="(a+b)*abb"
                 className="font-mono"
               />
-              <div className="flex gap-2">
+              <div className="flex shrink-0 flex-wrap gap-2">
                 <Button variant="primary" onClick={() => run("thompson")}>
                   <Workflow size={16} /> Thompson
                 </Button>
@@ -59,6 +79,23 @@ export default function RegexPage() {
               implicite · <code className="text-[var(--color-primary-hover)]">( )</code> groupes ·{" "}
               <code className="text-[var(--color-primary-hover)]">ε</code> mot vide.
             </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]/70 p-3">
+            <span className="flex items-center gap-1 text-xs text-[var(--color-faint)]">
+              <Keyboard size={13} /> Symboles
+            </span>
+            {["ε", "+", "*", "(", ")"].map((symbol) => (
+              <button
+                key={symbol}
+                type="button"
+                title={`Insérer ${symbol}`}
+                onClick={() => insertText(symbol)}
+                className="flex h-8 min-w-8 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface-2)] px-2 font-mono text-sm text-[var(--color-text)] transition-colors hover:border-[var(--color-primary)] hover:text-[var(--color-primary-hover)]"
+              >
+                {symbol}
+              </button>
+            ))}
           </div>
 
           <div className="flex flex-wrap items-center gap-2">

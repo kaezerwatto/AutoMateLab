@@ -124,45 +124,55 @@ export default function LabPage() {
   };
 
   return (
-    <div className="flex h-full flex-col">
+    <div className="flex h-full min-h-[calc(100dvh-4rem)] flex-col">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[var(--color-border)] bg-[var(--color-surface)]/50 p-3">
-        <Button size="sm" variant="primary" onClick={() => addState()}>
-          <Plus size={15} /> État
-        </Button>
-        <Button size="sm" variant="secondary" onClick={() => setAutomaton(autoLayout(current))}>
-          <LayoutGrid size={15} /> Auto-layout
-        </Button>
-        <Button size="sm" variant="secondary" onClick={() => setExamplesOpen(true)}>
-          <FolderOpen size={15} /> Exemples
-        </Button>
-        <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()}>
-          <Upload size={15} /> Importer
-        </Button>
-        <Button size="sm" variant="ghost" onClick={() => downloadJson(current, current.name)}>
-          <Download size={15} /> Exporter
-        </Button>
-        {highlight.length > 0 && (
-          <Button size="sm" variant="ghost" onClick={clearHighlight}>
-            <Eraser size={15} /> Effacer surbrillance
+      <div className="shrink-0 border-b border-[var(--color-border)] bg-[var(--color-surface)]/50 p-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="primary" onClick={() => addState()}>
+            <Plus size={15} /> État
           </Button>
-        )}
-        <input
-          ref={fileRef}
-          type="file"
-          accept="application/json,.json"
-          hidden
-          onChange={(e) => e.target.files?.[0] && onImport(e.target.files[0])}
-        />
-
-        <div className="mx-1 hidden h-6 w-px bg-[var(--color-border)] sm:block" />
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          {OPS.map((op) => (
-            <Button key={op.key} size="sm" variant="outline" onClick={() => runOp(op)}>
-              <op.icon size={14} /> {op.label}
+          <Button size="sm" variant="secondary" onClick={() => setAutomaton(autoLayout(current))}>
+            <LayoutGrid size={15} /> Auto-layout
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setExamplesOpen(true)}>
+            <FolderOpen size={15} /> Exemples
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => fileRef.current?.click()}>
+            <Upload size={15} /> Importer
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => downloadJson(current, current.name)}>
+            <Download size={15} /> Exporter
+          </Button>
+          {highlight.length > 0 && (
+            <Button size="sm" variant="ghost" onClick={clearHighlight}>
+              <Eraser size={15} /> Effacer surbrillance
             </Button>
-          ))}
+          )}
+          <input
+            ref={fileRef}
+            type="file"
+            accept="application/json,.json"
+            hidden
+            onChange={(e) => e.target.files?.[0] && onImport(e.target.files[0])}
+          />
+
+          <div className="mx-1 hidden h-6 w-px bg-[var(--color-border)] sm:block" />
+
+          <div className="-mx-3 mt-1 w-[calc(100%+1.5rem)] overflow-x-auto px-3 pb-1 sm:mx-0 sm:mt-0 sm:w-auto sm:overflow-visible sm:px-0 sm:pb-0">
+            <div className="flex w-max items-center gap-1.5 sm:w-auto sm:flex-wrap">
+              {OPS.map((op) => (
+                <Button
+                  key={op.key}
+                  size="sm"
+                  variant="outline"
+                  onClick={() => runOp(op)}
+                  className="shrink-0"
+                >
+                  <op.icon size={14} /> {op.label}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -173,9 +183,10 @@ export default function LabPage() {
       )}
 
       {/* Canvas + inspector */}
-      <div className="flex min-h-0 flex-1">
-        <div className="relative min-w-0 flex-1">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
+        <div className="relative min-h-[360px] min-w-0 flex-1 lg:min-h-0">
           <AutomatonCanvas
+            className="absolute inset-0"
             automaton={current}
             highlight={highlight}
             dimNonHighlighted={highlight.length > 0}
@@ -196,6 +207,10 @@ export default function LabPage() {
             <Badge variant="accent">{current.name}</Badge>
           </div>
         </div>
+
+        <aside className="h-[min(38dvh,22rem)] min-h-64 shrink-0 overflow-hidden border-t border-[var(--color-border)] bg-[var(--color-surface)]/40 lg:hidden">
+          <AutomatonInspector />
+        </aside>
 
         <aside className="hidden w-80 shrink-0 border-l border-[var(--color-border)] bg-[var(--color-surface)]/40 lg:block">
           <AutomatonInspector />

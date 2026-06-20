@@ -91,6 +91,7 @@ function CanvasInner({
 
   return (
     <ReactFlow
+      className="h-full w-full"
       nodes={nodes}
       edges={edges}
       nodeTypes={nodeTypes}
@@ -121,7 +122,7 @@ function CanvasInner({
 
 export function AutomatonCanvas(props: AutomatonCanvasProps) {
   return (
-    <div className={props.className ?? "h-full w-full"}>
+    <div className={props.className ?? "h-full min-h-0 w-full"}>
       <ReactFlowProvider>
         <CanvasInner {...props} />
       </ReactFlowProvider>
