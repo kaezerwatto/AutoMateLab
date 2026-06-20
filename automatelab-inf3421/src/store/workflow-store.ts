@@ -69,8 +69,13 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
   running: false,
   log: [],
 
+  // Les deux sources sont indépendantes : rafraîchir l'automate courant ne doit
+  // jamais effacer l'expression renseignée dans un nœud Regex.
   setSource: (automaton, regex) =>
-    set({ sourceAutomaton: automaton, sourceRegex: regex }),
+    set((state) => ({
+      sourceAutomaton: automaton ?? state.sourceAutomaton,
+      sourceRegex: regex ?? state.sourceRegex,
+    })),
 
   addOperation: (type, x, y) =>
     set((s) => {
@@ -142,8 +147,19 @@ export const useWorkflowStore = create<WorkflowState>((set, get) => ({
       type: n.type,
       params: {
         ...n.data.params,
-        automaton: n.type === "inputAutomaton" ? sourceAutomaton : undefined,
-        regex: n.type === "inputRegex" ? sourceRegex : n.data.params?.regex,
+        // Un automate JSON attaché au nœud est prioritaire sur l'automate du Studio.
+        automaton:
+          n.type === "inputAutomaton"
+            ? (typeof n.data.params?.automatonJson === "string" && n.data.params.automatonJson.trim()
+                ? (n.data.params.automaton as Automaton | undefined)
+                : sourceAutomaton)
+            : undefined,
+        // Chaque nœud Regex possède sa propre valeur. La source globale ne sert
+        // qu'à conserver la compatibilité avec les anciens workflows.
+        regex:
+          n.type === "inputRegex"
+            ? ((n.data.params?.regex as string | undefined) ?? sourceRegex ?? "")
+            : n.data.params?.regex,
       },
     }));
 

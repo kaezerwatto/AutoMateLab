@@ -1,6 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Play, RotateCcw, Save, Loader2, Terminal, SlidersHorizontal } from "lucide-react";
+import {
+  Play,
+  RotateCcw,
+  Save,
+  Loader2,
+  Terminal,
+  SlidersHorizontal,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog } from "@/components/ui/dialog";
@@ -21,6 +31,7 @@ export default function WorkflowPage() {
   const applyResult = useAutomatonStore((s) => s.applyResult);
 
   const [tab, setTab] = useState("inspector");
+  const [paletteCollapsed, setPaletteCollapsed] = useState(false);
   const [dialog, setDialog] = useState<{ title: string; result: AlgorithmResult } | null>(null);
   const [saved, setSaved] = useState(false);
 
@@ -72,9 +83,47 @@ export default function WorkflowPage() {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
-        {/* Palette */}
-        <aside className="hidden w-64 shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)]/40 md:block">
-          <OperationPalette onAdd={(t) => addOperation(t)} />
+        {/* Palette d'opérations : rétractable comme la navigation latérale. */}
+        <aside
+          className={cn(
+            "hidden shrink-0 border-r border-[var(--color-border)] bg-[var(--color-surface)]/40 transition-[width] duration-200 md:flex md:flex-col",
+            paletteCollapsed ? "w-14" : "w-64",
+          )}
+        >
+          {paletteCollapsed ? (
+            <>
+              <button
+                type="button"
+                onClick={() => setPaletteCollapsed(false)}
+                className="m-2 flex items-center justify-center rounded-md p-2 text-[var(--color-faint)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
+                aria-label="Déployer les opérations"
+                title="Déployer les opérations"
+              >
+                <PanelLeftOpen size={17} />
+              </button>
+              <div className="min-h-0 flex-1">
+                <OperationPalette collapsed onAdd={(t) => addOperation(t)} />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center justify-between border-b border-[var(--color-border)] px-3 py-2.5">
+                <span className="text-xs font-semibold text-[var(--color-text)]">Opérations</span>
+                <button
+                  type="button"
+                  onClick={() => setPaletteCollapsed(true)}
+                  className="rounded-md p-1.5 text-[var(--color-faint)] transition-colors hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
+                  aria-label="Réduire les opérations"
+                  title="Réduire les opérations"
+                >
+                  <PanelLeftClose size={16} />
+                </button>
+              </div>
+              <div className="min-h-0 flex-1">
+                <OperationPalette onAdd={(t) => addOperation(t)} />
+              </div>
+            </>
+          )}
         </aside>
 
         {/* Canvas */}

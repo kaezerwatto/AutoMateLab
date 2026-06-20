@@ -31,6 +31,7 @@ import {
   unionAutomata,
 } from "../closure-operations";
 import { enfaToNfa } from "../enfa-to-nfa";
+import { runWorkflowGraph } from "../operations";
 
 const nfaAbb: Automaton = {
   id: "a",
@@ -317,5 +318,27 @@ describe("canonisation", () => {
   it("renomme en q0, q1, ...", () => {
     const r = canonize(nfaAbb);
     expect(r.result.states[0].label).toBe("q0");
+  });
+});
+
+describe("workflow : données d'entrée", () => {
+  it("utilise la regex configurée sur le nœud source", () => {
+    const results = runWorkflowGraph(
+      [
+        { id: "regex", type: "inputRegex", params: { regex: "ab" } },
+        { id: "thompson", type: "thompson" },
+      ],
+      [{ source: "regex", target: "thompson" }],
+    );
+    const result = results.get("thompson");
+    expect(result && !("error" in result)).toBe(true);
+  });
+
+  it("refuse une source automate JSON invalide", () => {
+    const results = runWorkflowGraph(
+      [{ id: "source", type: "inputAutomaton", params: { automatonJson: "{invalide}" } }],
+      [],
+    );
+    expect(results.get("source")).toMatchObject({ error: "Aucun automate fourni à la source." });
   });
 });
